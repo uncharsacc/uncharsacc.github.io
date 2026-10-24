@@ -86,7 +86,7 @@
     ],
     "Backend": [
       "Python",
-      "C#"
+      "C#sss"
     ],
     "Herramientas": [
       "Git",
@@ -99,7 +99,33 @@
     "phone": "+569 6414 3826",
     "location": "Santiago de chile",
     "github": "https://github.com/uncharsacc",
-    "linkedin": ""
+    "linkedin": "",
+    "items": [
+      {
+        "label": "Email",
+        "value": "juanitolmillo@gmail.com",
+        "url": "mailto:juanitolmillo@gmail.com",
+        "icon": "✉️"
+      },
+      {
+        "label": "Teléfono",
+        "value": "+569 6414 3826",
+        "url": "tel:+569 6414 3826",
+        "icon": "📞"
+      },
+      {
+        "label": "Ubicación",
+        "value": "Santiago de chile",
+        "url": "",
+        "icon": "📍"
+      },
+      {
+        "label": "GitHub",
+        "value": "@uncharsacc",
+        "url": "https://github.com/uncharsacc",
+        "icon": "🐙"
+      }
+    ]
   },
   "certifications": [
     {
