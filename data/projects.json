@@ -2,7 +2,7 @@
   {
     "id": "pagina-de-marcos",
     "name": "Página de Marcos",
-    "description": "Sitio web completo de catálogo y cotización de marcos. Incluye frontend, catálogo y funcionalidades de cotización.",
+    "description": "Sitio web completo de catálogo y cotización de marcos. Incluye frontend, catálogo y funcionalidades de cotización y funcionalidades de encontrar un marco por una foto, tambien representa un cotizadort personal de precios de lentes ya que es un segundo empredimiento que tengo que es venrder lentes.",
     "tech": [
       "HTML",
       "CSS",
@@ -10,7 +10,9 @@
     ],
     "github": "https://github.com/uncharsacc/pagina-de-marcos",
     "demo": "https://pagina-de-marcos.vercel.app",
-    "featured": true
+    "featured": true,
+    "image": null,
+    "icon": ""
   },
   {
     "id": "yt-music-downloader",
@@ -39,12 +41,14 @@
   {
     "id": "pagina-de-prueba",
     "name": "Página de Prueba",
-    "description": "Página de prueba orientada a un posible e-commerce.",
+    "description": "Página de prueba orientada a un posible e-commerce. Nunca terminado dejado a mitad de su desarrollo",
     "tech": [
       "HTML"
     ],
     "github": "https://github.com/uncharsacc/pagina-de-prueba",
     "demo": null,
-    "featured": false
+    "featured": false,
+    "image": null,
+    "icon": ""
   }
 ]
