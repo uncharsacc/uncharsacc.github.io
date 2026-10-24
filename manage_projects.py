@@ -241,7 +241,7 @@ class PortfolioEditor(tk.Tk):
             self._map[iid] = (kind, key)
             return iid
 
-        h = add("", "🏠 Hero / Datos", "section_personal", open_=True)
+        h = add("", "🏠 Hero / Datos", "section_personal", open_=False)
         for k, lab in [("name", "Nombre"), ("shortName", "Iniciales"),
                        ("heroSubtitle", "Subtítulo"), ("about", "About"), ("github", "GitHub URL"),
                        ("cv", "Curriculum (cv.pdf o URL)")]:
@@ -286,14 +286,14 @@ class PortfolioEditor(tk.Tk):
         for i, c in enumerate(self.profile.get("certifications") or []):
             add(ce, f"{c.get('name', '')} — {c.get('org', '')}", "cert", i)
 
-        ts = add("", "🧩 Tech stack", "section_stack", open_=True)
+        ts = add("", "🧩 Tech stack", "section_stack", open_=False)
         for group, items in (self.profile.get("techStack") or {}).items():
-            gid = add(ts, f"📁 {group}", "stack_group", group, open_=True)
+            gid = add(ts, f"📁 {group}", "stack_group", group, open_=False)
             for i, tech in enumerate(items):
                 add(gid, tech, "stack_item", (group, i))
 
         # Contact as list of items
-        co = add("", "📧 Contacto", "section_contact", open_=True)
+        co = add("", "📧 Contacto", "section_contact", open_=False)
         c = self.profile.get("contact") or {}
         items = c.get("items")
         if not items:
@@ -319,15 +319,23 @@ class PortfolioEditor(tk.Tk):
         for i, it in enumerate(items):
             add(co, f"{it.get('label', '')}: {it.get('value', '')}", "contact_item", i)
 
-        # Restaurar secciones abiertas y selección
+        # Solo reabrir lo que el usuario tenía abierto (nada más)
         if restore_open:
             for path in restore_open:
                 nid = self._find_by_path(path)
                 if nid:
-                    self.tree.item(nid, open=True)
+                    # abrir también padres para que se vea
+                    cur = nid
+                    while cur:
+                        self.tree.item(cur, open=True)
+                        cur = self.tree.parent(cur)
         if restore_path:
             nid = self._find_by_path(restore_path)
             if nid:
+                cur = nid
+                while cur:
+                    self.tree.item(cur, open=True)
+                    cur = self.tree.parent(cur)
                 self.tree.see(nid)
                 self.tree.selection_set(nid)
                 self.tree.focus(nid)
@@ -358,6 +366,76 @@ class PortfolioEditor(tk.Tk):
                 return pk
             parent = self.tree.parent(parent)
         return None
+
+
+    def _label_for(self, kind, key):
+        """Texto visible del nodo según datos actuales."""
+        if kind == "field":
+            labs = {"name": "Nombre", "shortName": "Iniciales", "heroSubtitle": "Subtítulo",
+                    "about": "About", "github": "GitHub URL", "cv": "Curriculum (cv.pdf o URL)"}
+            val = (self.profile.get(key) or "")[:55]
+            return f"{labs.get(key, key)}: {val}"
+        if kind == "stat":
+            st = self.profile.get("stats") or {}
+            return f"{key}: {st.get(key, '')}"
+        if kind == "marquee_item":
+            return self.profile.get("techMarquee", [""])[key]
+        if kind == "highlight":
+            it = self.profile.get("highlights", [])[key]
+            return f"{it.get('num', '')} — {it.get('label', '')}"
+        if kind == "skill_icon":
+            it = self.profile.get("skillIcons", [])[key]
+            return f"{(it.get('icon') or '◆')[:20]}  {it.get('name', '')}"
+        if kind == "skill":
+            it = self.profile.get("skills", [])[key]
+            return f"{it.get('name', '')} — {it.get('level', 0)}%"
+        if kind == "experience":
+            e = self.profile.get("experience", [])[key]
+            return f"{e.get('title', '')} @ {e.get('company', '')}"
+        if kind == "project":
+            pr = self.projects[key]
+            star = "★ " if pr.get("featured") else ""
+            return f"{star}{pr.get('name', '')}"
+        if kind == "education":
+            return self.profile.get("education", [])[key].get("title", "")
+        if kind == "cert":
+            c = self.profile.get("certifications", [])[key]
+            return f"{c.get('name', '')} — {c.get('org', '')}"
+        if kind == "contact_item":
+            it = self.profile.get("contact", {}).get("items", [])[key]
+            return f"{it.get('label', '')}: {it.get('value', '')}"
+        if kind == "stack_item":
+            group, idx = key
+            return self.profile.get("techStack", {}).get(group, [])[idx]
+        if kind == "stack_group":
+            return f"📁 {key}"
+        return None
+
+    def _patch_node(self, iid, kind, key):
+        """Actualiza solo el texto del nodo, sin recargar el árbol."""
+        label = self._label_for(kind, key)
+        if label is not None:
+            self.tree.item(iid, text=label)
+        self.set_status("Modificado (sin recargar) — pulsa Guardar")
+
+    def _insert_under_section(self, section_kind, text, kind, key):
+        """Inserta un hijo al final de la sección, sin refresh."""
+        parent = None
+        for iid, (k, _) in self._map.items():
+            if k == section_kind:
+                parent = iid
+                break
+        if parent is None:
+            self.refresh_tree()
+            return
+        nid = self.tree.insert(parent, "end", text=text)
+        self._map[nid] = (kind, key)
+        self.tree.item(parent, open=True)
+        self.tree.see(nid)
+        self.tree.selection_set(nid)
+        self.tree.focus(nid)
+        self.set_status("Agregado (sin recargar) — pulsa Guardar")
+        return nid
 
     def edit_selected(self):
         got = self.selected()
@@ -516,6 +594,9 @@ class PortfolioEditor(tk.Tk):
                 if new_name != key:
                     stack.pop(key, None)
                 stack[new_name] = new_items
+                # renombrar grupo cambia claves → refresh inevitable
+                self.refresh_tree()
+            return
 
         elif kind == "stack_item":
             group, idx = key
@@ -550,8 +631,9 @@ class PortfolioEditor(tk.Tk):
             messagebox.showinfo("Info", f"Sin editor para: {kind}")
             return
 
-        self.refresh_tree()
-        self.set_status("Editado — pulsa Guardar para persistir")
+        # Solo actualizar el nodo visible (no recargar árbol)
+        self._patch_node(iid, kind, key)
+
 
     def add_in_section(self):
         got = self.selected()
@@ -562,57 +644,68 @@ class PortfolioEditor(tk.Tk):
 
         if sec == "section_marquee":
             v = ask(self, "Tech", "Nombre")
-            if v:
-                self.profile.setdefault("techMarquee", []).append(v)
+            if not v:
+                return
+            arr = self.profile.setdefault("techMarquee", [])
+            arr.append(v)
+            self._insert_under_section(sec, v, "marquee_item", len(arr) - 1)
         elif sec == "section_highlights":
             d = EditDialog(self, "Highlight",
                            [("num", "Número", "1+"), ("label", "Label", "")], with_icon=True)
-            if d.result:
-                self.profile.setdefault("highlights", []).append(
-                    {"num": d.result["num"], "label": d.result["label"], "icon": d.result["_icon"]})
+            if not d.result:
+                return
+            arr = self.profile.setdefault("highlights", [])
+            arr.append({"num": d.result["num"], "label": d.result["label"], "icon": d.result["_icon"]})
+            self._insert_under_section(sec, f"{d.result['num']} — {d.result['label']}", "highlight", len(arr) - 1)
         elif sec == "section_skill_icons":
             d = EditDialog(self, "Skill", [("name", "Nombre", "")], with_icon=True, icon_value="◆")
-            if d.result:
-                self.profile.setdefault("skillIcons", []).append(
-                    {"name": d.result["name"], "icon": d.result["_icon"] or "◆"})
+            if not d.result:
+                return
+            arr = self.profile.setdefault("skillIcons", [])
+            arr.append({"name": d.result["name"], "icon": d.result["_icon"] or "◆"})
+            ic = (d.result["_icon"] or "◆")[:20]
+            self._insert_under_section(sec, f"{ic}  {d.result['name']}", "skill_icon", len(arr) - 1)
         elif sec == "section_skills":
             d = EditDialog(self, "Skill %",
                            [("name", "Nombre", ""), ("level", "Nivel", "70")], with_icon=True)
-            if d.result:
-                try:
-                    lvl = int(d.result["level"])
-                except ValueError:
-                    lvl = 70
-                self.profile.setdefault("skills", []).append(
-                    {"name": d.result["name"], "level": lvl, "icon": d.result["_icon"]})
+            if not d.result:
+                return
+            try:
+                lvl = int(d.result["level"])
+            except ValueError:
+                lvl = 70
+            arr = self.profile.setdefault("skills", [])
+            arr.append({"name": d.result["name"], "level": lvl, "icon": d.result["_icon"]})
+            self._insert_under_section(sec, f"{d.result['name']} — {lvl}%", "skill", len(arr) - 1)
         elif sec == "section_experience":
-            self.profile.setdefault("experience", []).append(
-                {"title": "Nuevo", "company": "", "period": "", "location": "",
-                 "description": "", "bullets": [], "tech": [], "icon": ""})
-            self.refresh_tree()
-            # select last — edit
-            return self._edit_last("experience")
+            arr = self.profile.setdefault("experience", [])
+            arr.append({"title": "Nuevo", "company": "", "period": "", "location": "",
+                        "description": "", "bullets": [], "tech": [], "icon": ""})
+            self._insert_under_section(sec, "Nuevo @ ", "experience", len(arr) - 1)
         elif sec == "section_projects":
             self.projects.append(
                 {"id": "nuevo", "name": "Nuevo proyecto", "description": "", "tech": [],
                  "github": "", "demo": None, "featured": False, "image": None, "icon": ""})
-            self.refresh_tree()
-            return
+            self._insert_under_section(sec, "Nuevo proyecto", "project", len(self.projects) - 1)
         elif sec == "section_education":
             d = EditDialog(self, "Educación",
                            [("title", "Título", ""), ("institution", "Institución", ""),
                             ("period", "Periodo", ""), ("status", "Estado", "")], with_icon=True)
-            if d.result:
-                self.profile.setdefault("education", []).append({
-                    "title": d.result["title"], "institution": d.result["institution"],
-                    "period": d.result["period"], "status": d.result["status"],
-                    "icon": d.result["_icon"]})
+            if not d.result:
+                return
+            arr = self.profile.setdefault("education", [])
+            arr.append({"title": d.result["title"], "institution": d.result["institution"],
+                        "period": d.result["period"], "status": d.result["status"],
+                        "icon": d.result["_icon"]})
+            self._insert_under_section(sec, d.result["title"] or "Educación", "education", len(arr) - 1)
         elif sec == "section_certs":
             d = EditDialog(self, "Cert",
                            [("name", "Nombre", ""), ("org", "Organización", "")], with_icon=True)
-            if d.result:
-                self.profile.setdefault("certifications", []).append(
-                    {"name": d.result["name"], "org": d.result["org"], "icon": d.result["_icon"]})
+            if not d.result:
+                return
+            arr = self.profile.setdefault("certifications", [])
+            arr.append({"name": d.result["name"], "org": d.result["org"], "icon": d.result["_icon"]})
+            self._insert_under_section(sec, f"{d.result['name']} — {d.result['org']}", "cert", len(arr) - 1)
         elif sec == "section_stack":
             self.add_stack_group()
             return
@@ -624,23 +717,19 @@ class PortfolioEditor(tk.Tk):
                  ("url", "Link", "")],
                 with_icon=True, icon_value="✉️",
             )
-            if d.result:
-                self.profile.setdefault("contact", {}).setdefault("items", []).append({
-                    "label": d.result["label"],
-                    "value": d.result["value"],
-                    "url": d.result["url"],
-                    "icon": d.result["_icon"],
-                })
+            if not d.result:
+                return
+            items = self.profile.setdefault("contact", {}).setdefault("items", [])
+            items.append({
+                "label": d.result["label"],
+                "value": d.result["value"],
+                "url": d.result["url"],
+                "icon": d.result["_icon"],
+            })
+            self._insert_under_section("section_contact",
+                f"{d.result['label']}: {d.result['value']}", "contact_item", len(items) - 1)
         else:
             messagebox.showinfo("Info", "Selecciona una sección (o un ítem dentro) para agregar.")
-            return
-
-        self.refresh_tree()
-        self.set_status("Agregado")
-
-    def _edit_last(self, kind):
-        # noop placeholder
-        self.set_status("Agregado — selecciónalo y edítalo")
 
     def add_stack_group(self):
         name = ask(self, "Nuevo grupo", "Nombre del grupo (ej: Herramientas, DevOps, Cloud)")
@@ -652,53 +741,107 @@ class PortfolioEditor(tk.Tk):
             return
         techs = ask(self, "Tecnologías", "Lista separada por coma (opcional)") or ""
         stack[name] = [x.strip() for x in techs.split(",") if x.strip()]
-        self.refresh_tree()
-        self.set_status(f"Grupo «{name}» creado")
+        # insert group under stack section
+        parent = None
+        for iid, (k, _) in self._map.items():
+            if k == "section_stack":
+                parent = iid
+                break
+        if parent is None:
+            self.refresh_tree()
+            return
+        gid = self.tree.insert(parent, "end", text=f"📁 {name}", open=True)
+        self._map[gid] = ("stack_group", name)
+        for i, tech in enumerate(stack[name]):
+            cid = self.tree.insert(gid, "end", text=tech)
+            self._map[cid] = ("stack_item", (name, i))
+        self.tree.item(parent, open=True)
+        self.tree.see(gid)
+        self.tree.selection_set(gid)
+        self.set_status(f"Grupo «{name}» creado — pulsa Guardar")
 
     def move(self, delta):
         got = self.selected()
         if not got:
             return
         iid, (kind, key) = got
-        arr, i = None, None
+        parent = self.tree.parent(iid)
+        siblings = list(self.tree.get_children(parent))
+        try:
+            pos = siblings.index(iid)
+        except ValueError:
+            return
+        new_pos = pos + delta
+        if new_pos < 0 or new_pos >= len(siblings):
+            return
+
+        # datos
+        arr = None
         if kind == "project":
-            arr, i = self.projects, key
+            arr = self.projects
+            i = key
         elif kind == "marquee_item":
-            arr, i = self.profile.setdefault("techMarquee", []), key
+            arr = self.profile.setdefault("techMarquee", [])
+            i = key
         elif kind == "highlight":
-            arr, i = self.profile.setdefault("highlights", []), key
+            arr = self.profile.setdefault("highlights", [])
+            i = key
         elif kind == "skill_icon":
-            arr, i = self.profile.setdefault("skillIcons", []), key
+            arr = self.profile.setdefault("skillIcons", [])
+            i = key
         elif kind == "skill":
-            arr, i = self.profile.setdefault("skills", []), key
+            arr = self.profile.setdefault("skills", [])
+            i = key
         elif kind == "experience":
-            arr, i = self.profile.setdefault("experience", []), key
+            arr = self.profile.setdefault("experience", [])
+            i = key
         elif kind == "education":
-            arr, i = self.profile.setdefault("education", []), key
+            arr = self.profile.setdefault("education", [])
+            i = key
         elif kind == "cert":
-            arr, i = self.profile.setdefault("certifications", []), key
+            arr = self.profile.setdefault("certifications", [])
+            i = key
         elif kind == "contact_item":
-            arr, i = self.profile.setdefault("contact", {}).setdefault("items", []), key
+            arr = self.profile.setdefault("contact", {}).setdefault("items", [])
+            i = key
         elif kind == "stack_item":
             group, i = key
             arr = self.profile.setdefault("techStack", {}).setdefault(group, [])
         else:
             messagebox.showinfo("Info", "Este ítem no se reordena así")
             return
+
         j = i + delta
         if j < 0 or j >= len(arr):
             return
         arr[i], arr[j] = arr[j], arr[i]
-        self.refresh_tree()
-        self.set_status("Reordenado")
+
+        # mover en el árbol sin refresh
+        self.tree.move(iid, parent, new_pos)
+        # reindex keys de hermanos del mismo tipo
+        for idx, sib in enumerate(self.tree.get_children(parent)):
+            sk, skey = self._map.get(sib, (None, None))
+            if sk != kind:
+                continue
+            if kind == "stack_item":
+                self._map[sib] = (kind, (group, idx))
+            else:
+                self._map[sib] = (kind, idx)
+        self.tree.selection_set(iid)
+        self.tree.see(iid)
+        self.set_status("Reordenado (sin recargar) — pulsa Guardar")
 
     def delete_selected(self):
         got = self.selected()
         if not got:
             return
         iid, (kind, key) = got
+        if kind and kind.startswith("section_"):
+            messagebox.showinfo("Info", "No se puede eliminar una sección entera")
+            return
         if not messagebox.askyesno("Confirmar", "¿Eliminar?"):
             return
+        parent = self.tree.parent(iid)
         try:
             if kind == "project":
                 self.projects.pop(key)
@@ -729,8 +872,23 @@ class PortfolioEditor(tk.Tk):
         except (IndexError, KeyError) as e:
             messagebox.showerror("Error", str(e))
             return
-        self.refresh_tree()
-        self.set_status("Eliminado")
+
+        # borrar solo el nodo visual
+        self.tree.delete(iid)
+        if iid in self._map:
+            del self._map[iid]
+        # reindex hermanos
+        if parent and kind not in ("stack_group",):
+            for idx, sib in enumerate(self.tree.get_children(parent)):
+                sk, skey = self._map.get(sib, (None, None))
+                if sk != kind:
+                    continue
+                if kind == "stack_item":
+                    g = key[0]
+                    self._map[sib] = (kind, (g, idx))
+                else:
+                    self._map[sib] = (kind, idx)
+        self.set_status("Eliminado (sin recargar) — pulsa Guardar")
 
     def github_settings(self):
         d = EditDialog(
