@@ -100,7 +100,7 @@
     "phone": "+569 6414 3826",
     "location": "Santiago de chile",
     "github": "https://github.com/uncharsacc",
-    "linkedin": "",
+    "linkedin": "https://cl.linkedin.com/in/juan-eulogio-rivera-vasquez-751340394",
     "items": [
       {
         "label": "Email",
@@ -125,6 +125,12 @@
         "value": "@uncharsacc",
         "url": "https://github.com/uncharsacc",
         "icon": "https://cdn.simpleicons.org/github"
+      },
+      {
+        "label": "Linkedin",
+        "value": "Juan Eulogio Rivera Vasquez",
+        "url": "https://cl.linkedin.com/in/juan-eulogio-rivera-vasquez-751340394",
+        "icon": "https://cdn.simpleicons.org/linkedin/0A66C2"
       }
     ]
   },
