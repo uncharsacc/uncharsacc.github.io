@@ -145,27 +145,23 @@
   "skillIcons": [
     {
       "name": "HTML",
-      "icon": "<>"
+      "icon": "https://cdn.simpleicons.org/html5"
     },
     {
       "name": "CSS",
-      "icon": "#"
+      "icon": "https://cdn.simpleicons.org/CSS"
     },
     {
       "name": "JS",
-      "icon": "JS"
+      "icon": "https://cdn.simpleicons.org/JavaScript"
     },
     {
       "name": "Python",
-      "icon": "Py"
+      "icon": "https://cdn.simpleicons.org/Python"
     },
     {
       "name": "C#",
-      "icon": "C#"
-    },
-    {
-      "name": "Git",
-      "icon": "Git"
+      "icon": "https://img.icons8.com/color/48/c-sharp-logo.png"
     }
   ],
   "highlights": [

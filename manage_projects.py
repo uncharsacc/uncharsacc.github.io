@@ -187,7 +187,52 @@ class PortfolioEditor(tk.Tk):
     def set_status(self, m):
         self.status.config(text=m)
 
-    def refresh_tree(self):
+    def _tree_path(self, iid):
+        """Ruta estable del nodo: lista de textos desde la raíz."""
+        if not iid:
+            return None
+        parts = []
+        cur = iid
+        while cur:
+            parts.append(self.tree.item(cur, "text"))
+            cur = self.tree.parent(cur)
+        return tuple(reversed(parts))
+
+    def _open_paths(self):
+        paths = set()
+        def walk(iid):
+            for c in self.tree.get_children(iid):
+                if self.tree.item(c, "open"):
+                    paths.add(self._tree_path(c))
+                walk(c)
+        walk("")
+        return paths
+
+    def _find_by_path(self, path):
+        if not path:
+            return None
+        parent = ""
+        iid = None
+        for part in path:
+            found = None
+            for c in self.tree.get_children(parent):
+                if self.tree.item(c, "text") == part:
+                    found = c
+                    break
+            if not found:
+                return None
+            iid = found
+            parent = found
+        return iid
+
+    def refresh_tree(self, restore_path=None, restore_open=None):
+        # Guardar posición actual si no se pasa
+        if restore_path is None:
+            sel = self.tree.selection()
+            restore_path = self._tree_path(sel[0]) if sel else None
+        if restore_open is None:
+            restore_open = self._open_paths()
+
         self.tree.delete(*self.tree.get_children())
         self._map.clear()
 
@@ -274,6 +319,19 @@ class PortfolioEditor(tk.Tk):
         for i, it in enumerate(items):
             add(co, f"{it.get('label', '')}: {it.get('value', '')}", "contact_item", i)
 
+        # Restaurar secciones abiertas y selección
+        if restore_open:
+            for path in restore_open:
+                nid = self._find_by_path(path)
+                if nid:
+                    self.tree.item(nid, open=True)
+        if restore_path:
+            nid = self._find_by_path(restore_path)
+            if nid:
+                self.tree.see(nid)
+                self.tree.selection_set(nid)
+                self.tree.focus(nid)
+                self.on_select()
         self.set_status("Árbol actualizado")
 
     def on_select(self, _=None):
