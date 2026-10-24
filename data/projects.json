@@ -25,8 +25,8 @@
   },
   {
     "id": "vitrify",
-    "name": "Vitrify1",
-    "description": "",
+    "name": "Vitrify",
+    "description": "\"Proyecto en bsado en (C#) con la ayuda de una inteleigencia artifical para corregir errores y ayudar a compender la ruta y el proceso que con lleva  el desarrollo de una aplicacion de escritorio que este intersectado en los drivers de arranque del equipo para hacer un congelamiento de la computadora y que sea utilizada para servidores o computadores de instituciones o de oficionas para que nose píerda informacion valiosa y quede congelada en el tiempo, como dar un ejemplo",
     "tech": [
       "C#"
     ],
