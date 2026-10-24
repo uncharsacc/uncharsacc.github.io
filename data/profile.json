@@ -72,10 +72,11 @@
   ],
   "education": [
     {
-      "title": "Autodidacta / Proyectos propios",
-      "institution": "GitHub & práctica continua",
+      "title": "Ingeniero Civil Informatica y Telecomunicaciones",
+      "institution": "Universidad Finis Terrae",
       "period": "2023 — Presente",
-      "status": "En curso"
+      "status": "En curso",
+      "icon": ""
     }
   ],
   "techStack": {
