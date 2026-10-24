@@ -57,18 +57,23 @@
   ],
   "experience": [
     {
-      "title": "Desarrollador Independiente",
-      "company": "Proyectos personales",
-      "period": "2023 — Presente",
-      "location": "Chile",
-      "description": "Creación de páginas web, herramientas de automatización y proyectos experimentales. Aprendiendo de forma constante y construyendo soluciones reales.",
+      "title": "Estudiante en Prácticas – Desarrollo Full Stack",
+      "company": "Universidad Finis Terrae",
+      "period": "Ene. 2026 – Feb. 2026",
+      "location": "Santiago, Chile",
+      "description": "Práctica profesional enfocada en el desarrollo de aplicaciones web Full Stack, integración de servicios externos y herramientas basadas en Inteligencia Artificial.",
       "tech": [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "Python",
-        "C#"
-      ]
+        "Full Stack",
+        "APIs",
+        "Inteligencia Artificial"
+      ],
+      "bullets": [
+        "Desarrollé e implementé funcionalidades para aplicaciones web Full Stack.",
+        "Integré y consumí APIs y servicios externos.",
+        "Implementé herramientas y funcionalidades basadas en Inteligencia Artificial.",
+        "Participé en el análisis, desarrollo, pruebas y resolución de problemas técnicos."
+      ],
+      "icon": "https://cdn.simpleicons.org/privateinternetaccess"
     }
   ],
   "education": [
@@ -77,6 +82,13 @@
       "institution": "Universidad Finis Terrae",
       "period": "2023 — Presente",
       "status": "En curso",
+      "icon": ""
+    },
+    {
+      "title": "Enseñanza Media Completa",
+      "institution": "Liceo Benjamín Dávila Larraín",
+      "period": "Egreso 2021",
+      "status": "Completada",
       "icon": ""
     }
   ],
@@ -162,6 +174,18 @@
     {
       "name": "C#",
       "icon": "https://img.icons8.com/color/48/c-sharp-logo.png"
+    },
+    {
+      "name": "Node.js",
+      "icon": "https://cdn.simpleicons.org/node.js"
+    },
+    {
+      "name": "MySQL",
+      "icon": "https://cdn.simpleicons.org/MySQL"
+    },
+    {
+      "name": "Postgresql",
+      "icon": "https://cdn.simpleicons.org/postgresql"
     }
   ],
   "highlights": [

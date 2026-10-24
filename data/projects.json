@@ -1,12 +1,13 @@
 [
   {
     "id": "pagina-de-marcos",
-    "name": "Página de Marcos",
-    "description": "Sitio web completo de catálogo y cotización de marcos. Incluye frontend, catálogo y funcionalidades de cotización y funcionalidades de encontrar un marco por una foto, tambien representa un cotizadort personal de precios de lentes ya que es un segundo empredimiento que tengo que es venrder lentes.",
+    "name": "Plataforma Web de Venta de Lentes",
+    "description": "Plataforma web desarrollada de forma independiente para la comercialización de lentes. Incluye catálogo de productos, sistema de búsqueda y gestión de productos.",
     "tech": [
-      "HTML",
-      "CSS",
-      "JavaScript"
+      "Full Stack",
+      "Catálogo",
+      "Búsqueda",
+      "Gestión de productos"
     ],
     "github": "https://github.com/uncharsacc/pagina-de-marcos",
     "demo": "https://pagina-de-marcos.vercel.app",
@@ -16,23 +17,45 @@
   },
   {
     "id": "yt-music-downloader",
-    "name": "YT Music Downloader",
-    "description": "Descargador de música de YouTube hecho en Python.",
+    "name": "Gestor de Salas para Universidades",
+    "description": "Solución para administrar salas, su disponibilidad y la organización de espacios universitarios, pensada para optimizar el uso de la infraestructura.",
     "tech": [
-      "Python"
+      "Full Stack",
+      "Gestión de disponibilidad"
     ],
-    "github": "https://github.com/uncharsacc/yt-music-downloader",
+    "github": null,
     "demo": null,
-    "featured": true
+    "featured": true,
+    "image": null,
+    "icon": ""
   },
   {
     "id": "vitrify",
-    "name": "Vitrify",
-    "description": "\"Proyecto en bsado en (C#) con la ayuda de una inteleigencia artifical para corregir errores y ayudar a compender la ruta y el proceso que con lleva  el desarrollo de una aplicacion de escritorio que este intersectado en los drivers de arranque del equipo para hacer un congelamiento de la computadora y que sea utilizada para servidores o computadores de instituciones o de oficionas para que nose píerda informacion valiosa y quede congelada en el tiempo, como dar un ejemplo",
+    "name": "Web Scraping y Envío de Correos",
+    "description": "Proyecto universitario que automatiza la extracción de información mediante Web Scraping, el procesamiento de los datos obtenidos y el envío de correos personalizados.",
     "tech": [
+      "Web Scraping",
+      "Automatización",
+      "Procesamiento de datos",
+      "Correo"
+    ],
+    "github": null,
+    "demo": null,
+    "featured": false,
+    "image": null,
+    "icon": ""
+  },
+  {
+    "id": "nuevo",
+    "name": "Software de Restauración y Protección del Sistema(Vitrify)",
+    "description": "Software basado en drivers y procesos de arranque, diseñado para proteger y restaurar el estado de un computador de forma automática.",
+    "tech": [
+      "Drivers",
+      "Procesos de arranque",
+      "Sistemas",
       "C#"
     ],
-    "github": "https://github.com/uncharsacc/Vitrify",
+    "github": null,
     "demo": null,
     "featured": false,
     "image": null,
