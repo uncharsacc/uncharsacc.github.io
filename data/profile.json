@@ -106,19 +106,19 @@
         "label": "Email",
         "value": "juanitolmillo@gmail.com",
         "url": "mailto:juanitolmillo@gmail.com",
-        "icon": "✉️"
+        "icon": "https://cdn.simpleicons.org/gmail"
       },
       {
         "label": "Teléfono",
         "value": "+569 6414 3826",
         "url": "tel:+569 6414 3826",
-        "icon": "📞"
+        "icon": "https://cdn.simpleicons.org/whatsapp"
       },
       {
         "label": "Ubicación",
         "value": "Santiago de chile",
         "url": "",
-        "icon": "📍"
+        "icon": "https://img.icons8.com/material-rounded/48/place-marker.png"
       },
       {
         "label": "GitHub",
@@ -130,7 +130,7 @@
         "label": "Linkedin",
         "value": "Juan Eulogio Rivera Vasquez",
         "url": "https://cl.linkedin.com/in/juan-eulogio-rivera-vasquez-751340394",
-        "icon": "https://cdn.simpleicons.org/linkedin/0A66C2"
+        "icon": "https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg"
       }
     ]
   },

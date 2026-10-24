@@ -252,6 +252,26 @@ function render(profile, projects) {
   document.getElementById('year').textContent = new Date().getFullYear();
   if (profile.github) document.getElementById('btn-github').href = profile.github;
 
+  // Curriculum / CV
+  const cvBtn = document.getElementById('btn-cv');
+  if (cvBtn) {
+    const cv = profile.cv || profile.cvUrl || '';
+    if (cv) {
+      cvBtn.href = cv;
+      cvBtn.hidden = false;
+      // force download for same-origin files
+      if (!/^https?:\/\//i.test(cv)) {
+        cvBtn.setAttribute('download', '');
+      } else {
+        cvBtn.removeAttribute('download');
+        cvBtn.target = '_blank';
+        cvBtn.rel = 'noopener';
+      }
+    } else {
+      cvBtn.hidden = true;
+    }
+  }
+
   const st = profile.stats || {};
   document.getElementById('hero-stats').innerHTML = `
     <div class="stat"><strong>${st.years || '—'}</strong><span>${st.yearsLabel || 'Años'}</span></div>
