@@ -1,0 +1,48 @@
+[
+  {
+    "id": "pagina-de-marcos",
+    "name": "Página de Marcos",
+    "description": "Sitio web completo de catálogo y cotización de marcos. Incluye frontend, catálogo y funcionalidades de cotización.",
+    "tech": [
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "github": "https://github.com/uncharsacc/pagina-de-marcos",
+    "demo": "https://pagina-de-marcos.vercel.app",
+    "featured": true
+  },
+  {
+    "id": "yt-music-downloader",
+    "name": "YT Music Downloader",
+    "description": "Descargador de música de YouTube hecho en Python.",
+    "tech": [
+      "Python"
+    ],
+    "github": "https://github.com/uncharsacc/yt-music-downloader",
+    "demo": null,
+    "featured": true
+  },
+  {
+    "id": "vitrify",
+    "name": "Vitrify",
+    "description": "Proyecto en C# (servidor y más).",
+    "tech": [
+      "C#"
+    ],
+    "github": "https://github.com/uncharsacc/Vitrify",
+    "demo": null,
+    "featured": false
+  },
+  {
+    "id": "pagina-de-prueba",
+    "name": "Página de Prueba",
+    "description": "Página de prueba orientada a un posible e-commerce.",
+    "tech": [
+      "HTML"
+    ],
+    "github": "https://github.com/uncharsacc/pagina-de-prueba",
+    "demo": null,
+    "featured": false
+  }
+]
