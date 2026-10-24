@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uncharsacc — Portfolio</title>
+  <meta name="description" content="Portfolio de Uncharsacc" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <canvas id="bg-canvas"></canvas>
+
+  <nav class="nav">
+    <a href="#inicio" class="nav-logo" id="nav-logo">UN</a>
+    <ul class="nav-links">
+      <li><a href="#inicio">Inicio</a></li>
+      <li><a href="#sobre-mi">Acerca</a></li>
+      <li><a href="#experiencia">Exp.</a></li>
+      <li><a href="#proyectos">Proyectos</a></li>
+      <li><a href="#educacion">Edu</a></li>
+      <li><a href="#certs">Certs</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <button class="nav-toggle" aria-label="Menú"><span></span><span></span><span></span></button>
+  </nav>
+
+  <header id="inicio" class="hero">
+    <div class="hero-inner">
+      <p class="hero-name" id="hero-name">Uncharsacc</p>
+      <h1 class="hero-code">&lt;<span>CODE</span>/&gt;</h1>
+      <p class="hero-sub" id="hero-subtitle"></p>
+      <div class="hero-stats" id="hero-stats"></div>
+      <div class="hero-actions">
+        <a href="#proyectos" class="btn btn-fill">Ver Proyectos</a>
+        <a href="#contacto" class="btn btn-line">Contacto</a>
+        <a id="btn-github" href="https://github.com/uncharsacc" target="_blank" rel="noopener" class="btn btn-line">GitHub</a>
+      </div>
+    </div>
+    <div class="tech-bar">
+      <div class="tech-track" id="tech-track"></div>
+    </div>
+  </header>
+
+  <section id="sobre-mi" class="section">
+    <div class="container">
+      <h2 class="h2">Acerca de mí</h2>
+      <div class="about-layout">
+        <div class="about-main">
+          <p class="about-body" id="about-text"></p>
+          <h3 class="h3" id="skills-title">Habilidades clave</h3>
+          <div class="skill-icons" id="skill-icons"></div>
+        </div>
+        <div class="about-side" id="about-side"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experiencia" class="section section-dim">
+    <div class="container">
+      <h2 class="h2">Experiencia</h2>
+      <p class="lead">Trayectoria construyendo y aprendiendo</p>
+      <div class="exp-list" id="experience-container"></div>
+    </div>
+  </section>
+
+  <section id="proyectos" class="section">
+    <div class="container">
+      <h2 class="h2">Proyectos</h2>
+      <p class="lead">Algunos trabajos. Voy sumando de a poco.</p>
+      <div class="proj-grid" id="projects-container"></div>
+    </div>
+  </section>
+
+  <section id="educacion" class="section section-dim">
+    <div class="container">
+      <h2 class="h2">Educación</h2>
+      <p class="lead">Formación académica</p>
+      <div class="edu-list" id="education-container"></div>
+    </div>
+  </section>
+
+  <section id="certs" class="section">
+    <div class="container">
+      <h2 class="h2">Certificaciones</h2>
+      <p class="lead">Cursos y certificaciones</p>
+      <div class="certs-list" id="certs-container"></div>
+    </div>
+  </section>
+
+  <section id="skills" class="section section-dim">
+    <div class="container">
+      <h2 class="h2">Tecnologías</h2>
+      <p class="lead">Stack con el que trabajo</p>
+      <div class="stack-row" id="stack-container"></div>
+      <div class="skills-bars" id="skills-container"></div>
+    </div>
+  </section>
+
+  <section id="contacto" class="section">
+    <div class="container">
+      <h2 class="h2">Contacto</h2>
+      <p class="lead">Abierto a proyectos e ideas</p>
+      <div class="contact-row" id="contact-container"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <span>© <span id="year"></span> <span id="footer-name">Uncharsacc</span></span>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+</body>
+</html>

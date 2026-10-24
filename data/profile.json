@@ -1,0 +1,150 @@
+{
+  "name": "Juan Rivera",
+  "shortName": "JR",
+  "title": "En curso",
+  "tagline": "Desarrollador en focado en el crecimiento, de habilidades y con pasamientos musicales",
+  "heroSubtitle": "Desarrollador en focado en el crecimiento, de habilidades y con pasa tienpos musicales.",
+  "stats": {
+    "years": "1+",
+    "yearsLabel": "Años creando",
+    "projects": "4+",
+    "projectsLabel": "Proyectos",
+    "skills": "6+",
+    "skillsLabel": "Skills clave11"
+  },
+  "about": "Apasionado por la tecnología, el desarrollo web y las herramientas que realmente ayudan a las personas. Creo proyectos con dedicación, aprendiendo cada día y buscando dejar una huella positiva.\n\nMe gusta experimentar, automatizar y crear cosas que funcionen de verdad. Voy sumando proyectos de a poco y mejorando en cada uno.",
+  "location": "Chile",
+  "email": "",
+  "phone": "",
+  "github": "https://github.com/uncharsacc",
+  "linkedin": "",
+  "techMarquee": [
+    "HTML",
+    "CSS",
+    "JavaScript",
+    "Python",
+    "C#",
+    "Git",
+    "GitHub",
+    "Docker"
+  ],
+  "skills": [
+    {
+      "name": "HTML / CSS",
+      "level": 85
+    },
+    {
+      "name": "JavaScript",
+      "level": 75
+    },
+    {
+      "name": "Python",
+      "level": 80
+    },
+    {
+      "name": "C#",
+      "level": 70
+    },
+    {
+      "name": "Git / GitHub",
+      "level": 80
+    },
+    {
+      "name": "Diseño Web",
+      "level": 70
+    }
+  ],
+  "experience": [
+    {
+      "title": "Desarrollador Independiente",
+      "company": "Proyectos personales",
+      "period": "2023 — Presente",
+      "location": "Chile",
+      "description": "Creación de páginas web, herramientas de automatización y proyectos experimentales. Aprendiendo de forma constante y construyendo soluciones reales.",
+      "tech": [
+        "HTML",
+        "CSS",
+        "JavaScript",
+        "Python",
+        "C#"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "title": "Autodidacta / Proyectos propios",
+      "institution": "GitHub & práctica continua",
+      "period": "2023 — Presente",
+      "status": "En curso"
+    }
+  ],
+  "techStack": {
+    "Frontend": [
+      "HTML",
+      "CSS",
+      "JavaScript"
+    ],
+    "Backend": [
+      "Python",
+      "C#"
+    ],
+    "Herramientas": [
+      "Git",
+      "GitHub",
+      "Docker"
+    ]
+  },
+  "contact": {
+    "email": "juanitolmillo@gmail.com",
+    "phone": "+569 6414 3826",
+    "location": "Santiago de chile",
+    "github": "https://github.com/uncharsacc",
+    "linkedin": ""
+  },
+  "certifications": [
+    {
+      "name": "Ejemplo: Git & GitHub",
+      "org": "Curso / plataforma"
+    }
+  ],
+  "skillIcons": [
+    {
+      "name": "HTML",
+      "icon": "<>"
+    },
+    {
+      "name": "CSS",
+      "icon": "#"
+    },
+    {
+      "name": "JS",
+      "icon": "JS"
+    },
+    {
+      "name": "Python",
+      "icon": "Py"
+    },
+    {
+      "name": "C#",
+      "icon": "C#"
+    },
+    {
+      "name": "Git",
+      "icon": "Git"
+    }
+  ],
+  "highlights": [
+    {
+      "num": "1+",
+      "label": "Años creando"
+    },
+    {
+      "num": "4+",
+      "label": "Proyectos"
+    },
+    {
+      "num": "6+",
+      "label": "Skills clave"
+    }
+  ]
+}
