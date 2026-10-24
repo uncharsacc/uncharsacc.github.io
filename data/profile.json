@@ -130,8 +130,9 @@
   },
   "certifications": [
     {
-      "name": "Ejemplo: Git & GitHub",
-      "org": "Curso / plataforma"
+      "name": "",
+      "org": "",
+      "icon": ""
     }
   ],
   "skillIcons": [
