@@ -643,6 +643,7 @@ ul { list-style: none; }
 .stack-group { background: none; border: none; border-radius: 0; padding: 0; }
 .stack-group h4 { font-size: 0.85rem; margin-bottom: 0.9rem; }
 .stack-items { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+
 .tech-tile {
   display: inline-flex;
   flex-direction: column;
@@ -760,4 +761,4 @@ ul { list-style: none; }
   font-size: 0.88rem;
   line-height: 1.55;
 }
-.exp-panel .tags { border-top: 1px solid var(--border); padding-top: 1rem; }
+.exp-panel .tags { border-top: 1px solid var(--border); padding-top: 1rem; }  
