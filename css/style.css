@@ -603,3 +603,161 @@ ul { list-style: none; }
   line-height: 1.55;
 }
 .exp-bullets li { margin-bottom: 0.35rem; }
+
+/* ============ ICONOS (compartido) ============ */
+.ico-img { width: 22px; height: 22px; object-fit: contain; display: block; flex-shrink: 0; }
+.ico-emoji { font-size: 1.15rem; line-height: 1; flex-shrink: 0; }
+
+/* ============ PROYECTOS: tarjetas de tamaño FIJO; si no caben -> carrusel ============ */
+.section-wide { padding-left: 0; padding-right: 0; }
+.section-wide .container { padding: 0 1.5rem; }
+
+.proj-viewport { width: 100%; overflow-x: auto; padding: 0.5rem 0 1rem; scrollbar-width: thin; }  /* respaldo: scroll manual */
+.proj-track { display: flex; width: max-content; margin: 0 auto; }                                  /* pocas: centradas */
+.proj-group { display: flex; align-items: stretch; gap: 1rem; flex-shrink: 0; width: max-content; }
+
+.proj-card {
+  flex: 0 0 320px;          /* nunca se estira ni se encoge */
+  width: 320px;
+  max-width: 85vw;
+}
+.proj-card h3 { display: flex; align-items: flex-start; gap: 0.5rem; }
+.proj-card h3 .ico-img { width: 20px; height: 20px; margin-top: 2px; }
+.proj-card h3 span, .proj-card p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.proj-card h3 span { -webkit-line-clamp: 2; line-clamp: 2; }   /* título: máx 2 líneas */
+.proj-card p { -webkit-line-clamp: 4; line-clamp: 4; }         /* descripción: máx 4 líneas */
+.proj-card .tags { max-height: 4.6rem; overflow: hidden; }     /* tags: máx ~2 filas */
+.proj-card .proj-links { margin-top: auto; padding-top: 0.75rem; }
+
+/* no caben: se mueve solo (JS) y además se puede arrastrar con la barra de abajo */
+.proj-viewport { scroll-behavior: auto; scrollbar-color: rgba(167, 139, 250, 0.5) transparent; }
+.proj-viewport.scrolling .proj-track { margin: 0; }
+.proj-viewport.scrolling .proj-group { padding-right: 1rem; }
+
+/* ============ TECNOLOGÍAS: sin fondo de grupo, cada tech con su cajita ============ */
+.stack-row { display: flex; flex-direction: column; gap: 2rem; }
+.stack-group { background: none; border: none; border-radius: 0; padding: 0; }
+.stack-group h4 { font-size: 0.85rem; margin-bottom: 0.9rem; }
+.stack-items { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+.tech-tile {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1rem;
+  min-width: 64px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  color: var(--muted);
+  white-space: nowrap;
+  transition: border-color 0.2s, color 0.2s, transform 0.2s;
+}
+.tech-tile:hover { border-color: rgba(167, 139, 250, 0.45); color: var(--text); transform: translateY(-2px); }
+.tech-tile .ico-img { width: 28px; height: 28px; }
+.tech-tile .ico-emoji { font-size: 1.5rem; }
+
+/* ============ SKILLS: sección propia, cajas que se ajustan al contenido ============ */
+.skills-chips { display: flex; flex-wrap: wrap; gap: 0.7rem; }
+.skill-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: fit-content;
+  padding: 0.55rem 0.95rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.skill-chip:hover { border-color: rgba(167, 139, 250, 0.45); transform: translateY(-2px); }
+.skill-chip .lvl { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); }
+
+
+/* ============ EXPERIENCIA: pestañas + tarjeta ============ */
+.exp-tabs {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.75rem;
+  scrollbar-width: none;
+}
+.exp-tabs::-webkit-scrollbar { display: none; }
+.exp-tab {
+  flex: 0 0 auto;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 0.85rem 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.exp-tab:hover { color: var(--text); }
+.exp-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.exp-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.exp-panel {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  animation: exp-in 0.25s ease;
+}
+@keyframes exp-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.exp-head { display: flex; gap: 0.9rem; align-items: flex-start; }
+.exp-ico {
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.exp-ico:empty { display: none; }
+.exp-ico .ico-img { width: 24px; height: 24px; }
+.exp-title { font-size: 1.15rem; font-weight: 700; color: var(--accent); line-height: 1.25; }
+.exp-company { font-weight: 600; font-size: 0.95rem; margin-top: 0.15rem; }
+.exp-sub { color: var(--accent-soft); font-size: 0.82rem; margin-top: 0.2rem; line-height: 1.5; }
+.exp-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; margin: 1rem 0; }
+.exp-badge {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--muted);
+}
+.exp-loc { font-size: 0.78rem; color: var(--muted); }
+.exp-divider { border: none; border-top: 1px solid var(--border); margin: 0 0 1rem; }
+.exp-points { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 1.1rem; }
+.exp-points li {
+  border-left: 2px solid var(--border);
+  padding-left: 0.9rem;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.exp-panel .tags { border-top: 1px solid var(--border); padding-top: 1rem; }

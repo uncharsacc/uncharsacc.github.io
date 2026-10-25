@@ -44,11 +44,25 @@ def ask(parent, title, prompt, initial=""):
     return simpledialog.askstring(title, prompt, initialvalue=initial or "", parent=parent)
 
 
+def tech_name(t):
+    return t.get("name", "") if isinstance(t, dict) else str(t)
+
+
+def tech_icon(t):
+    return t.get("icon", "") if isinstance(t, dict) else ""
+
+
+def make_tech(name, icon):
+    """Sin icono -> texto simple. Con icono -> {name, icon}."""
+    name, icon = (name or "").strip(), (icon or "").strip()
+    return {"name": name, "icon": icon} if icon else name
+
+
 def ask_icon(parent, current=""):
     return ask(
         parent,
         "Icono",
-        "Emoji, texto corto O URL de imagen\n(ej: ✉️  o  https://cdn.simpleicons.org/gmail)",
+        "Emoji, URL de imagen o atajo si:nombre\n(ej: ✉️  ·  si:gmail  ·  https://…)",
         current or "",
     )
 
@@ -83,7 +97,7 @@ class EditDialog(tk.Toplevel):
             e.pack(fill="x", pady=(0, 8))
             tk.Label(
                 frm,
-                text="Ej. iconos: https://cdn.simpleicons.org/gmail  ·  https://cdn.simpleicons.org/github/a78bfa",
+                text="Atajo: si:python  ·  si:github/ffffff (con color)  ·  o URL https://…  ·  o un emoji",
                 bg=BG, fg=MUTED, font=("", 8), wraplength=400, justify="left",
             ).pack(fill="x")
         bf = tk.Frame(frm, bg=BG)
@@ -187,7 +201,40 @@ class PortfolioEditor(tk.Tk):
     def set_status(self, m):
         self.status.config(text=m)
 
+    # ---- recordar qué estaba abierto / seleccionado al refrescar ----
+    def _tree_path(self, iid):
+        parts = []
+        while iid:
+            parts.append(self.tree.item(iid, "text"))
+            iid = self.tree.parent(iid)
+        return tuple(reversed(parts))
+
+    def _open_paths(self):
+        paths = set()
+        def walk(parent):
+            for c in self.tree.get_children(parent):
+                if self.tree.item(c, "open"):
+                    paths.add(self._tree_path(c))
+                walk(c)
+        walk("")
+        return paths
+
+    def _find_by_path(self, path):
+        parent, found = "", None
+        for part in path:
+            found = next((c for c in self.tree.get_children(parent)
+                          if self.tree.item(c, "text") == part), None)
+            if found is None:
+                return None
+            parent = found
+        return found
+
     def refresh_tree(self):
+        # 1) guardar estado actual (vacío la primera vez -> todo cerrado)
+        open_before = self._open_paths()
+        sel = self.tree.selection()
+        sel_path = self._tree_path(sel[0]) if sel else None
+
         self.tree.delete(*self.tree.get_children())
         self._map.clear()
 
@@ -196,7 +243,7 @@ class PortfolioEditor(tk.Tk):
             self._map[iid] = (kind, key)
             return iid
 
-        h = add("", "🏠 Hero / Datos", "section_personal", open_=True)
+        h = add("", "🏠 Hero / Datos", "section_personal")
         for k, lab in [("name", "Nombre"), ("shortName", "Iniciales"),
                        ("heroSubtitle", "Subtítulo"), ("about", "About"), ("github", "GitHub URL")]:
             val = (self.profile.get(k) or "")[:55]
@@ -240,14 +287,14 @@ class PortfolioEditor(tk.Tk):
         for i, c in enumerate(self.profile.get("certifications") or []):
             add(ce, f"{c.get('name', '')} — {c.get('org', '')}", "cert", i)
 
-        ts = add("", "🧩 Tech stack", "section_stack", open_=True)
+        ts = add("", "🧩 Tech stack", "section_stack")
         for group, items in (self.profile.get("techStack") or {}).items():
-            gid = add(ts, f"📁 {group}", "stack_group", group, open_=True)
+            gid = add(ts, f"📁 {group}", "stack_group", group)
             for i, tech in enumerate(items):
-                add(gid, tech, "stack_item", (group, i))
+                add(gid, ("🖼 " if tech_icon(tech) else "") + tech_name(tech), "stack_item", (group, i))
 
         # Contact as list of items
-        co = add("", "📧 Contacto", "section_contact", open_=True)
+        co = add("", "📧 Contacto", "section_contact")
         c = self.profile.get("contact") or {}
         items = c.get("items")
         if not items:
@@ -274,6 +321,21 @@ class PortfolioEditor(tk.Tk):
             add(co, f"{it.get('label', '')}: {it.get('value', '')}", "contact_item", i)
 
         self.set_status("Árbol actualizado")
+
+        # 2) restaurar solo lo que el usuario tenía abierto
+        for path in open_before:
+            nid = self._find_by_path(path)
+            if nid:
+                self.tree.item(nid, open=True)
+        if sel_path:
+            nid = self._find_by_path(sel_path)
+            if nid:
+                cur = self.tree.parent(nid)
+                while cur:
+                    self.tree.item(cur, open=True)
+                    cur = self.tree.parent(cur)
+                self.tree.selection_set(nid)
+                self.tree.see(nid)
 
     def on_select(self, _=None):
         sel = self.tree.selection()
@@ -443,28 +505,21 @@ class PortfolioEditor(tk.Tk):
 
         elif kind == "stack_group":
             stack = self.profile.setdefault("techStack", {})
-            items = stack.get(key, [])
-            d = EditDialog(
-                self, f"Grupo: {key}",
-                [
-                    ("name", "Nombre del grupo", key),
-                    ("items", "Tecnologías (coma)", ", ".join(items)),
-                ],
-            )
+            d = EditDialog(self, f"Grupo: {key}", [("name", "Nombre del grupo", key)])
             if d.result:
                 new_name = d.result["name"] or key
-                new_items = [x.strip() for x in d.result["items"].split(",") if x.strip()]
                 if new_name != key:
-                    stack.pop(key, None)
-                stack[new_name] = new_items
+                    # renombra manteniendo el orden y los iconos
+                    self.profile["techStack"] = {(new_name if k == key else k): v for k, v in stack.items()}
 
         elif kind == "stack_item":
             group, idx = key
             arr = self.profile.setdefault("techStack", {}).setdefault(group, [])
-            d = EditDialog(self, "Tecnología", [("name", "Nombre", arr[idx])],
-                           with_icon=True, icon_value="")
+            cur = arr[idx]
+            d = EditDialog(self, "Tecnología", [("name", "Nombre", tech_name(cur))],
+                           with_icon=True, icon_value=tech_icon(cur))
             if d.result:
-                arr[idx] = d.result["name"]
+                arr[idx] = make_tech(d.result["name"], d.result["_icon"])
 
         elif kind == "contact_item":
             items = self.profile.setdefault("contact", {}).setdefault("items", [])
@@ -555,8 +610,17 @@ class PortfolioEditor(tk.Tk):
                 self.profile.setdefault("certifications", []).append(
                     {"name": d.result["name"], "org": d.result["org"], "icon": d.result["_icon"]})
         elif sec == "section_stack":
-            self.add_stack_group()
-            return
+            if kind in ("stack_group", "stack_item"):
+                group = key if kind == "stack_group" else key[0]
+                d = EditDialog(self, f"Nueva tecnología en «{group}»",
+                               [("name", "Nombre", "")], with_icon=True)
+                if not d.result or not d.result["name"]:
+                    return
+                self.profile.setdefault("techStack", {}).setdefault(group, []).append(
+                    make_tech(d.result["name"], d.result["_icon"]))
+            else:
+                self.add_stack_group()
+                return
         elif sec == "section_contact" or kind == "contact_item":
             d = EditDialog(
                 self, "Nuevo contacto",

@@ -243,6 +243,90 @@ async function load(path) {
   catch { return null; }
 }
 
+/* ---- iconos: emoji | URL https://... | atajo "si:python" o "si:github/ffffff" (Simple Icons) ---- */
+function resolveIcon(ic) {
+  ic = (ic || '').trim();
+  if (/^si:/i.test(ic)) return 'https://cdn.simpleicons.org/' + ic.slice(3).trim();
+  return ic;
+}
+function iconTag(ic) {
+  ic = resolveIcon(ic);
+  if (!ic) return '';
+  if (/^https?:\/\//i.test(ic))
+    return `<img class="ico-img" src="${ic}" alt="" loading="lazy" onerror="this.remove()" />`;
+  return `<span class="ico-emoji">${ic}</span>`;
+}
+
+/* ---- proyectos: si no caben de costado, se vuelve carrusel que se mueve solo ---- */
+let _projVP = null;
+let _projStop = null;
+function setupProjCarousel(vp) {
+  if (!vp) return;
+  _projVP = vp;
+  if (_projStop) { _projStop(); _projStop = null; }
+  const track = vp.querySelector('.proj-track');
+  const group = vp.querySelector('.proj-group:not(.clone)');
+  if (!track || !group) return;
+  track.querySelectorAll('.proj-group.clone').forEach(n => n.remove());
+  vp.classList.remove('scrolling');
+  vp.scrollLeft = 0;
+  if (group.scrollWidth <= vp.clientWidth - 48) return;   // caben: quietas y centradas
+
+  // no caben: duplicamos el grupo para un bucle sin saltos
+  const clone = group.cloneNode(true);
+  clone.classList.add('clone');
+  clone.setAttribute('aria-hidden', 'true');
+  track.appendChild(clone);
+  vp.classList.add('scrolling');
+  const loop = group.offsetWidth;                          // ancho de un grupo completo
+
+  const SPEED = 40;                                        // px por segundo
+  let pos = 0, paused = false, last = performance.now(), raf = 0, timer = 0;
+  const pause = () => { paused = true; clearTimeout(timer); };
+  const resume = ms => {
+    clearTimeout(timer);
+    timer = setTimeout(() => { pos = vp.scrollLeft; paused = false; last = performance.now(); }, ms);
+  };
+  const step = now => {
+    const dt = Math.min(64, now - last) / 1000;
+    last = now;
+    if (!paused) {
+      pos += SPEED * dt;
+      if (pos >= loop) pos -= loop;
+      vp.scrollLeft = pos;
+    }
+    raf = requestAnimationFrame(step);
+  };
+  // si el usuario arrastra la barra hasta el final, vuelve al inicio sin salto
+  const onScroll = () => { if (paused && vp.scrollLeft >= loop) vp.scrollLeft -= loop; };
+  const onEnter = () => pause();
+  const onLeave = () => resume(600);
+  const onTouchEnd = () => resume(2500);
+  vp.addEventListener('mouseenter', onEnter);
+  vp.addEventListener('mouseleave', onLeave);
+  vp.addEventListener('touchstart', onEnter, { passive: true });
+  vp.addEventListener('touchend', onTouchEnd);
+  vp.addEventListener('touchcancel', onTouchEnd);
+  vp.addEventListener('focusin', onEnter);
+  vp.addEventListener('focusout', onLeave);
+  vp.addEventListener('scroll', onScroll, { passive: true });
+  raf = requestAnimationFrame(step);
+
+  _projStop = () => {
+    cancelAnimationFrame(raf); clearTimeout(timer);
+    vp.removeEventListener('mouseenter', onEnter);
+    vp.removeEventListener('mouseleave', onLeave);
+    vp.removeEventListener('touchstart', onEnter);
+    vp.removeEventListener('touchend', onTouchEnd);
+    vp.removeEventListener('touchcancel', onTouchEnd);
+    vp.removeEventListener('focusin', onEnter);
+    vp.removeEventListener('focusout', onLeave);
+    vp.removeEventListener('scroll', onScroll);
+  };
+}
+let _rz;
+addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => setupProjCarousel(_projVP), 200); });
+
 function render(profile, projects) {
   if (!profile) return;
   document.getElementById('nav-logo').textContent = profile.shortName || 'UN';
@@ -292,7 +376,7 @@ function render(profile, projects) {
   // Skill icons (habilidades clave como en la referencia)
   const icons = profile.skillIcons || (profile.skills || []).map(s => ({ name: s.name, icon: '◆' }));
   document.getElementById('skill-icons').innerHTML = icons.map(s => {
-    const ic = s.icon || '◆';
+    const ic = resolveIcon(s.icon || '◆');
     const icoHtml = /^https?:\/\//i.test(ic)
       ? `<img src="${ic}" alt="" style="width:28px;height:28px;object-fit:contain;margin:0 auto 0.35rem;display:block;border-radius:4px;" />`
       : `<div class="ico">${ic}</div>`;
@@ -309,31 +393,71 @@ function render(profile, projects) {
     <div class="side-card"><div class="num">${h.num}</div><div class="lbl">${h.label || ''}</div></div>
   `).join('');
 
-  // Experience
-  document.getElementById('experience-container').innerHTML = (profile.experience || []).map(e => `
-    <article class="exp-card">
-      <h3>${e.title || ''}</h3>
-      <div class="exp-meta">${[e.company, e.period, e.location].filter(Boolean).join(' · ')}</div>
-      <p class="exp-desc">${e.description || ''}</p>
-      ${e.bullets && e.bullets.length ? `<ul class="exp-bullets">${e.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
-      <div class="tags">${(e.tech || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-    </article>
-  `).join('') || '<p style="color:var(--muted)">Agrega experiencia con manage_portfolio.py</p>';
+  // Experience: pestañas por empresa + tarjeta
+  const exps = profile.experience || [];
+  const expEl = document.getElementById('experience-container');
+  if (!exps.length) {
+    expEl.innerHTML = '<p style="color:var(--muted)">Aún no hay experiencia.</p>';
+  } else {
+    const panelHtml = e => `
+      <article class="exp-panel">
+        <div class="exp-head">
+          <div class="exp-ico">${iconTag(e.icon)}</div>
+          <div>
+            <div class="exp-title">${e.title || ''}</div>
+            <div class="exp-company">${e.company || ''}</div>
+            ${e.description ? `<div class="exp-sub">${e.description}</div>` : ''}
+          </div>
+        </div>
+        <div class="exp-badges">
+          ${e.period ? `<span class="exp-badge">${e.period}</span>` : ''}
+          ${e.location ? `<span class="exp-loc">${e.location}</span>` : ''}
+        </div>
+        ${e.bullets && e.bullets.length ? `<hr class="exp-divider" /><ul class="exp-points">${e.bullets.map(b => `<li>${b}</li>`).join('')}</ul>` : ''}
+        ${(e.tech || []).length ? `<div class="tags">${e.tech.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
+      </article>`;
+    expEl.innerHTML = `
+      <div class="exp-tabs" role="tablist">${exps.map((e, i) =>
+        `<button class="exp-tab${i === 0 ? ' active' : ''}" role="tab" aria-selected="${i === 0}" data-i="${i}">${e.company || e.title || 'Experiencia'}</button>`
+      ).join('')}</div>
+      <div id="exp-panel"></div>`;
+    const panel = expEl.querySelector('#exp-panel');
+    const tabs = [...expEl.querySelectorAll('.exp-tab')];
+    const showExp = i => {
+      tabs.forEach((t, k) => { t.classList.toggle('active', k === i); t.setAttribute('aria-selected', k === i); });
+      panel.innerHTML = panelHtml(exps[i]);
+      tabs[i].scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    };
+    tabs.forEach((t, i) => t.addEventListener('click', () => showExp(i)));
+    expEl.querySelector('.exp-tabs').addEventListener('keydown', ev => {
+      const cur = tabs.findIndex(t => t.classList.contains('active'));
+      if (ev.key === 'ArrowRight' && cur < tabs.length - 1) { showExp(cur + 1); tabs[cur + 1].focus(); }
+      if (ev.key === 'ArrowLeft' && cur > 0) { showExp(cur - 1); tabs[cur - 1].focus(); }
+    });
+    panel.innerHTML = panelHtml(exps[0]);
+  }
 
-  // Projects
+  // Projects (fila de costado; carrusel automático si no caben)
   const list = [...(projects || [])].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-  document.getElementById('projects-container').innerHTML = list.length ? list.map(p => `
-    <article class="proj-card${p.featured ? ' featured' : ''}">
-      ${p.featured ? '<div class="proj-badge">★ Destacado</div>' : ''}
-      <h3>${p.name}</h3>
-      <p>${p.description || ''}</p>
-      <div class="tags">${(p.tech || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-      <div class="proj-links">
-        ${p.github ? `<a class="main" href="${p.github}" target="_blank" rel="noopener">GitHub</a>` : ''}
-        ${p.demo ? `<a href="${p.demo}" target="_blank" rel="noopener">Demo</a>` : ''}
-      </div>
-    </article>
-  `).join('') : '<p style="color:var(--muted)">Sin proyectos. Usa manage_portfolio.py</p>';
+  const projEl = document.getElementById('projects-container');
+  if (list.length) {
+    const cards = list.map(p => `
+      <article class="proj-card${p.featured ? ' featured' : ''}">
+        ${p.featured ? '<div class="proj-badge">★ Destacado</div>' : ''}
+        <h3>${iconTag(p.icon)}<span>${p.name}</span></h3>
+        <p>${p.description || ''}</p>
+        <div class="tags">${(p.tech || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        <div class="proj-links">
+          ${p.github ? `<a class="main" href="${p.github}" target="_blank" rel="noopener">GitHub</a>` : ''}
+          ${p.demo ? `<a href="${p.demo}" target="_blank" rel="noopener">Demo</a>` : ''}
+        </div>
+      </article>`).join('');
+    projEl.innerHTML = `<div class="proj-track"><div class="proj-group">${cards}</div></div>`;
+    setupProjCarousel(projEl);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => setupProjCarousel(projEl));
+  } else {
+    projEl.innerHTML = '<p style="color:var(--muted)">Sin proyectos todavía.</p>';
+  }
 
   // Education
   document.getElementById('education-container').innerHTML = (profile.education || []).map(e => `
@@ -345,35 +469,27 @@ function render(profile, projects) {
   `).join('') || '<p style="color:var(--muted)">Agrega educación en el script</p>';
 
   // Certifications (faltaba)
-  document.getElementById('certs-container').innerHTML = (profile.certifications || []).map(c => `
+  document.getElementById('certs-container').innerHTML = (profile.certifications || []).filter(c => c && c.name).map(c => `
     <div class="cert-card">
       <div class="name">${c.name || ''}</div>
       <div class="org">${c.org || ''}</div>
     </div>
   `).join('') || '<p style="color:var(--muted)">Agrega certificaciones con el script</p>';
 
-  // Skills bars
-  const skEl = document.getElementById('skills-container');
-  skEl.innerHTML = (profile.skills || []).map(s => `
-    <div class="skill-item">
-      <div class="skill-top"><span>${s.name}</span><span>${s.level}%</span></div>
-      <div class="skill-bar"><div class="skill-fill" data-l="${s.level}"></div></div>
-    </div>
+  // Skills: icono + nombre (+ nivel), la caja se ajusta sola
+  document.getElementById('skills-container').innerHTML = (profile.skills || []).map(s => `
+    <div class="skill-chip">${iconTag(s.icon)}<span>${s.name}</span>${s.level ? `<span class="lvl">${s.level}%</span>` : ''}</div>
   `).join('');
-  const obs = new IntersectionObserver(ents => {
-    ents.forEach(e => {
-      if (e.isIntersecting)
-        e.target.querySelectorAll('.skill-fill').forEach(b => { b.style.width = b.dataset.l + '%'; });
-    });
-  }, { threshold: 0.25 });
-  if (skEl) obs.observe(skEl);
 
-  // Stack
+  // Tecnologías: grupos sin fondo; cada tech = icono + nombre. Acepta "Python" o {name, icon}
   const stack = profile.techStack || {};
   document.getElementById('stack-container').innerHTML = Object.entries(stack).map(([k, v]) => `
     <div class="stack-group">
       <h4>${k}</h4>
-      <div class="tags">${(v || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+      <div class="stack-items">${(v || []).map(t => {
+        const o = typeof t === 'string' ? { name: t, icon: '' } : t;
+        return `<div class="tech-tile">${iconTag(o.icon)}<span>${o.name}</span></div>`;
+      }).join('')}</div>
     </div>
   `).join('');
 
@@ -395,6 +511,7 @@ function render(profile, projects) {
     if (c.linkedin) itemsC.push({ l: 'LinkedIn', v: 'Perfil', h: c.linkedin, icon: c.linkedinIcon || 'in' });
   }
   function iconHtml(ic) {
+    ic = resolveIcon(ic);
     if (!ic) return '';
     if (/^https?:\/\//i.test(ic))
       return `<div class="c-icon"><img src="${ic}" alt="" /></div>`;
