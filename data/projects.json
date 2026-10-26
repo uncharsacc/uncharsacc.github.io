@@ -30,6 +30,23 @@
     "icon": ""
   },
   {
+    "id": "nuevo",
+    "name": "Algoritmos Exploratorios para Clústeres Atómicos",
+    "description": "Python para generar, filtrar y explorar estructuras de clústeres atómicos (Química Computacional). Participación en paper científico.",
+    "tech": [
+      "Python",
+      "NumPy",
+      "Pandas",
+      "Multiprocessing",
+      "Química Computacional"
+    ],
+    "github": "https://github.com/uncharsacc/Trabajo-de-investigacion",
+    "demo": null,
+    "featured": true,
+    "image": "https://img.icons8.com/color/48/physics.png",
+    "icon": ""
+  },
+  {
     "id": "vitrify",
     "name": "Web Scraping y Envío de Correos",
     "description": "Proyecto universitario que automatiza la extracción de información mediante Web Scraping, el procesamiento de los datos obtenidos y el envío de correos personalizados.",
