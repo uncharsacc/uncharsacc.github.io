@@ -171,13 +171,7 @@
       }
     ]
   },
-  "certifications": [
-    {
-      "name": "",
-      "org": "",
-      "icon": ""
-    }
-  ],
+  "certifications": [],
   "skillIcons": [
     {
       "name": "HTML",
