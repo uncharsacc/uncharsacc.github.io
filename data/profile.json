@@ -168,6 +168,10 @@
       {
         "name": "Docker",
         "icon": "https://cdn.simpleicons.org/docker"
+      },
+      {
+        "name": "Excel",
+        "icon": "https://cdn.simpleicons.org/microsoftexcel"
       }
     ],
     "Otros": [
