@@ -32,11 +32,13 @@
   "skills": [
     {
       "name": "HTML / CSS",
-      "level": 85
+      "level": 80,
+      "icon": ""
     },
     {
       "name": "JavaScript",
-      "level": 75
+      "level": 70,
+      "icon": ""
     },
     {
       "name": "Python",
@@ -44,15 +46,28 @@
     },
     {
       "name": "C#",
-      "level": 70
+      "level": 65,
+      "icon": ""
     },
     {
       "name": "Git / GitHub",
-      "level": 80
+      "level": 75,
+      "icon": ""
     },
     {
       "name": "Diseño Web",
-      "level": 70
+      "level": 65,
+      "icon": ""
+    },
+    {
+      "name": "Bases de Datos",
+      "level": 40,
+      "icon": ""
+    },
+    {
+      "name": "Django",
+      "level": 20,
+      "icon": ""
     }
   ],
   "experience": [
