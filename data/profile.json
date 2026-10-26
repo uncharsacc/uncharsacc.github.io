@@ -146,10 +146,43 @@
         "icon": "https://cdn.simpleicons.org/nodedotjs"
       }
     ],
+    "Bases de Datos": [
+      {
+        "name": "MySQL",
+        "icon": "https://cdn.simpleicons.org/mysql"
+      },
+      {
+        "name": "PostgreSQL",
+        "icon": "https://cdn.simpleicons.org/postgresql"
+      }
+    ],
     "Herramientas": [
-      "Git",
-      "GitHub",
-      "Docker"
+      {
+        "name": "Git",
+        "icon": "https://cdn.simpleicons.org/git"
+      },
+      {
+        "name": "GitHub",
+        "icon": "https://cdn.simpleicons.org/github"
+      },
+      {
+        "name": "Docker",
+        "icon": "https://cdn.simpleicons.org/docker"
+      }
+    ],
+    "Otros": [
+      {
+        "name": "NumPy",
+        "icon": "https://cdn.simpleicons.org/numpy"
+      },
+      {
+        "name": "APIs",
+        "icon": "https://cdn.simpleicons.org/fastapi"
+      },
+      {
+        "name": "Inteligencia Artificial",
+        "icon": "https://img.icons8.com/color/48/artificial-intelligence.png"
+      }
     ]
   },
   "contact": {
