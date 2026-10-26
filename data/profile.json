@@ -168,16 +168,30 @@
       {
         "name": "Docker",
         "icon": "https://cdn.simpleicons.org/docker"
+      }
+    ],
+    "Análisis de datos": [
+      {
+        "name": "NumPy",
+        "icon": "https://cdn.simpleicons.org/numpy"
+      },
+      {
+        "name": "Pandas",
+        "icon": "https://cdn.simpleicons.org/pandas"
       },
       {
         "name": "Excel",
         "icon": "https://cdn.simpleicons.org/microsoftexcel"
+      },
+      {
+        "name": "NetworkX",
+        "icon": "https://cdn.simpleicons.org/networkx"
       }
     ],
     "Otros": [
       {
-        "name": "NumPy",
-        "icon": "https://cdn.simpleicons.org/numpy"
+        "name": "Multiprocessing",
+        "icon": "https://img.icons8.com/color/48/processor.png"
       },
       {
         "name": "APIs",
