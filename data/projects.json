@@ -20,6 +20,8 @@
     "name": "Gestor de Salas para Universidades",
     "description": "Solución para administrar salas, su disponibilidad y la organización de espacios universitarios, pensada para optimizar el uso de la infraestructura.",
     "tech": [
+      "python",
+      "Django",
       "Full Stack",
       "Gestión de disponibilidad"
     ],
