@@ -74,6 +74,27 @@
         "Participé en el análisis, desarrollo, pruebas y resolución de problemas técnicos."
       ],
       "icon": "https://cdn.simpleicons.org/privateinternetaccess"
+    },
+    {
+      "title": "Desarrollador de Software – Investigación en Química Computacional.",
+      "company": "Diego Inostroza Mendoza",
+      "period": "JUL. 2026 – SET. 2026",
+      "location": "SANTIAGO",
+      "description": "Algoritmos exploratorios para clústeres atómicos.",
+      "bullets": [
+        "Desarrollé en Python un conjunto de herramientas para generar, filtrar y explorar estructuras de clústeres atómicos en Química Computacional.",
+        "Generador: construcción de clústeres a partir de anillos apilados configurables por archivo .ini, con enumeración de permutaciones atómicas únicas, eliminación de duplicados por simetría rotacional y estimación de energía con potencial de Lennard-Jones. Exporta a XYZ e inputs de Gaussian.",
+        "Filtrado: detección de estructuras duplicadas o similares mediante el índice de similitud de Grigoryan-Springborg, agrupadas por composición y diferencia de energía (kcal/mol), con ejecución paralela y reportes comparativos (CSV, JSON y Markdown) para múltiples umbrales.",
+        "clustergen: paquete Python con CLI y arquitectura extensible (cada familia estructural se registra automáticamente) que genera familias de clústeres (deltaedro, fullereno, tambor, rueda, hélice, sándwich, corona, entre otras), con validación de fórmulas y geometría, reporte de grupo puntual y exportación a XYZ."
+      ],
+      "tech": [
+        "Python",
+        "NumPy",
+        "Pandas",
+        "SymPy",
+        "Gaussian"
+      ],
+      "icon": "https://img.icons8.com/color/48/physics.png"
     }
   ],
   "education": [
