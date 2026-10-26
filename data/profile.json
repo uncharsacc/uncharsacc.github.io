@@ -290,6 +290,14 @@
     {
       "name": "Postgresql",
       "icon": "https://cdn.simpleicons.org/postgresql"
+    },
+    {
+      "name": "Django",
+      "icon": "https://cdn.simpleicons.org/django"
+    },
+    {
+      "name": "Pandas",
+      "icon": "https://cdn.simpleicons.org/pandas"
     }
   ],
   "highlights": [
