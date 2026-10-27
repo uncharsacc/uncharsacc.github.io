@@ -450,7 +450,7 @@ ul { list-style: none; }
   justify-content: center;
   font-size: 1.2rem;
   color: var(--accent);
-  background: #f3f1ff9c;              /* fondo blanco */
+  background: rgba(167, 139, 250, 0.18); /* acento fijo, iconos legibles */
   border-radius: 8px;
   padding: 4px;
   box-sizing: border-box;
@@ -460,6 +460,8 @@ ul { list-style: none; }
   height: 22px;
   object-fit: contain;
   display: block;
+  /* Simple Icons oscuros: un toque de brillo sobre fondo violeta */
+  filter: brightness(1.15);
 }
 .contact-item .c-body { min-width: 0; flex: 1; }
 .contact-item .lbl {
@@ -591,7 +593,8 @@ ul { list-style: none; }
 .section-wide { padding-left: 0; padding-right: 0; }
 .section-wide .container { padding: 0 1.5rem; }
 
-.proj-viewport { width: 100%; overflow-x: auto; padding: 0.5rem 0 1rem; scrollbar-width: thin; }  /* respaldo: scroll manual */
+.proj-viewport { width: 100%; overflow-x: auto; padding: 0.5rem 0 1rem; scrollbar-width: thin; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; cursor: grab; }
+.proj-viewport.dragging { cursor: grabbing; user-select: none; }
 .proj-track { display: flex; width: max-content; margin: 0 auto; }                                  /* pocas: centradas */
 .proj-group { display: flex; align-items: stretch; gap: 1rem; flex-shrink: 0; width: max-content; }
 
@@ -628,21 +631,30 @@ ul { list-style: none; }
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  padding: 0.75rem 1rem;
-  min-width: 64px;
-  background: rgba(255, 255, 255, 0.06);   /* un poco más claro */
+  gap: 0.4rem;
+  width: 104px;
+  height: 96px;
+  padding: 0.65rem 0.5rem;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(167, 139, 250, 0.22);
   border-radius: 10px;
   font-family: var(--mono);
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: var(--muted);
-  white-space: nowrap;
+  text-align: center;
+  line-height: 1.25;
   transition: border-color 0.2s, color 0.2s, transform 0.2s, background 0.2s;
 }
+.tech-tile span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .tech-tile:hover { border-color: rgba(167, 139, 250, 0.45); color: var(--text); transform: translateY(-2px); }
-.tech-tile .ico-img { width: 28px; height: 28px; }
-.tech-tile .ico-emoji { font-size: 1.5rem; }
+.tech-tile .ico-img { width: 28px; height: 28px; flex-shrink: 0; }
+.tech-tile .ico-emoji { font-size: 1.5rem; flex-shrink: 0; }
 
 /* ============ SKILLS: sección propia, cajas que se ajustan al contenido ============ */
 .skills-chips { display: flex; flex-wrap: wrap; gap: 0.7rem; }

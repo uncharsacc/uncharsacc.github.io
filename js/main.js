@@ -265,63 +265,47 @@ function setupProjCarousel(vp) {
   const track = vp.querySelector('.proj-track');
   const group = vp.querySelector('.proj-group:not(.clone)');
   if (!track || !group) return;
+  // Quitar clones de auto-scroll anterior
   track.querySelectorAll('.proj-group.clone').forEach(n => n.remove());
   vp.classList.remove('scrolling');
   vp.scrollLeft = 0;
-  if (group.scrollWidth <= vp.clientWidth - 48) return;   // caben: quietas y centradas
 
-  // no caben: duplicamos el grupo para un bucle sin saltos
-  const clone = group.cloneNode(true);
-  clone.classList.add('clone');
-  clone.setAttribute('aria-hidden', 'true');
-  track.appendChild(clone);
-  vp.classList.add('scrolling');
-  const loop = group.offsetWidth;                          // ancho de un grupo completo
+  // Solo scroll manual (mouse / touch / trackpad). Sin auto-movimiento.
+  let dragging = false, startX = 0, startScroll = 0;
+  const onDown = (e) => {
+    dragging = true;
+    vp.classList.add('dragging');
+    startX = (e.touches ? e.touches[0].pageX : e.pageX);
+    startScroll = vp.scrollLeft;
+  };
+  const onMove = (e) => {
+    if (!dragging) return;
+    const x = (e.touches ? e.touches[0].pageX : e.pageX);
+    vp.scrollLeft = startScroll - (x - startX);
+    if (e.cancelable && e.touches) e.preventDefault();
+  };
+  const onUp = () => { dragging = false; vp.classList.remove('dragging'); };
 
-  const SPEED = 40;                                        // px por segundo
-  let pos = 0, paused = false, last = performance.now(), raf = 0, timer = 0;
-  const pause = () => { paused = true; clearTimeout(timer); };
-  const resume = ms => {
-    clearTimeout(timer);
-    timer = setTimeout(() => { pos = vp.scrollLeft; paused = false; last = performance.now(); }, ms);
-  };
-  const step = now => {
-    const dt = Math.min(64, now - last) / 1000;
-    last = now;
-    if (!paused) {
-      pos += SPEED * dt;
-      if (pos >= loop) pos -= loop;
-      vp.scrollLeft = pos;
-    }
-    raf = requestAnimationFrame(step);
-  };
-  // si el usuario arrastra la barra hasta el final, vuelve al inicio sin salto
-  const onScroll = () => { if (paused && vp.scrollLeft >= loop) vp.scrollLeft -= loop; };
-  const onEnter = () => pause();
-  const onLeave = () => resume(600);
-  const onTouchEnd = () => resume(2500);
-  vp.addEventListener('mouseenter', onEnter);
-  vp.addEventListener('mouseleave', onLeave);
-  vp.addEventListener('touchstart', onEnter, { passive: true });
-  vp.addEventListener('touchend', onTouchEnd);
-  vp.addEventListener('touchcancel', onTouchEnd);
-  vp.addEventListener('focusin', onEnter);
-  vp.addEventListener('focusout', onLeave);
-  vp.addEventListener('scroll', onScroll, { passive: true });
-  raf = requestAnimationFrame(step);
+  vp.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  vp.addEventListener('touchstart', onDown, { passive: true });
+  vp.addEventListener('touchmove', onMove, { passive: false });
+  vp.addEventListener('touchend', onUp);
+  vp.addEventListener('touchcancel', onUp);
 
   _projStop = () => {
-    cancelAnimationFrame(raf); clearTimeout(timer);
-    vp.removeEventListener('mouseenter', onEnter);
-    vp.removeEventListener('mouseleave', onLeave);
-    vp.removeEventListener('touchstart', onEnter);
-    vp.removeEventListener('touchend', onTouchEnd);
-    vp.removeEventListener('touchcancel', onTouchEnd);
-    vp.removeEventListener('focusin', onEnter);
-    vp.removeEventListener('focusout', onLeave);
-    vp.removeEventListener('scroll', onScroll);
+    vp.removeEventListener('mousedown', onDown);
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+    vp.removeEventListener('touchstart', onDown);
+    vp.removeEventListener('touchmove', onMove);
+    vp.removeEventListener('touchend', onUp);
+    vp.removeEventListener('touchcancel', onUp);
+    vp.classList.remove('dragging');
   };
 }
+
 let _rz;
 addEventListener('resize', () => { clearTimeout(_rz); _rz = setTimeout(() => setupProjCarousel(_projVP), 200); });
 
@@ -435,7 +419,7 @@ function render(profile, projects) {
     panel.innerHTML = panelHtml(exps[0]);
   }
 
-  // Projects (fila de costado; carrusel automático si no caben)
+  // Projects (fila horizontal; solo scroll manual)
   const list = [...(projects || [])].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
   const projEl = document.getElementById('projects-container');
   if (list.length) {

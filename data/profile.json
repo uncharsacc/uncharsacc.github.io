@@ -12,7 +12,7 @@
     "skills": "8+",
     "skillsLabel": "Habilidades Clave"
   },
-  "about": "Soy estudiante de Ingeniería Civil Informática y Telecomunicaciones en la Universidad Finis Terrae, con experiencia práctica en desarrollo Full Stack, integración de APIs y herramientas de Inteligencia Artificial. Me interesa construir software que automatice procesos y resuelva problemas reales.\n\nHe desarrollado una plataforma web de venta, un gestor de salas para universidades, un software de restauración y protección del sistema y automatizaciones con web scraping. También participé como desarrollador en un proyecto de investigación en Química Computacional, creando algoritmos para generar y filtrar estructuras de clústeres atómicos.\n\nAprendo rápido, trabajo bien de forma autónoma y en equipo, y me adapto con facilidad a nuevas tecnologías. Estoy abierto a proyectos e ideas.",
+  "about": "Estudiante de Ingeniería Civil Informática y Telecomunicaciones en la Universidad Finis Terrae. Me enfoco en desarrollo web y en automatizar operaciones sencillas con código.\n\nHe armado sitios y apps web (catálogo de productos, gestión de salas) con HTML, CSS, JavaScript y Python/Django. Antes de herramientas como n8n, hice web scraping y envío automatizado de correos en Python. También usé C# en un software de restauración del sistema y Python (NumPy, Pandas) en un proyecto de investigación de clústeres atómicos.\n\nBusco seguir aprendiendo backend, bases de datos y APIs, y sumarme a proyectos reales.",
   "location": "Chile",
   "email": "",
   "phone": "",
