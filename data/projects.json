@@ -32,9 +32,9 @@
     "icon": ""
   },
   {
-    "id": "nuevo",
+    "id": "algoritmos-exploratorios-para-clústeres-",
     "name": "Algoritmos Exploratorios para Clústeres Atómicos",
-    "description": "Python para generar, filtrar y explorar estructuras de clústeres atómicos (Química Computacional). Participación en paper científico.",
+    "description": "Python para generar, filtrar y explorar estructuras de clústeres atómicos (Química Computacional).",
     "tech": [
       "Python",
       "NumPy",
