@@ -488,24 +488,6 @@ ul { list-style: none; }
   font-size: 0.85rem;
 }
 
-@media (max-width: 720px) {
-  .nav-links {
-    position: fixed;
-    top: 56px;
-    left: 0; right: 0;
-    background: rgba(10, 10, 18, 0.97);
-    flex-direction: column;
-    padding: 1rem 1.5rem;
-    gap: 0.85rem;
-    transform: translateY(-120%);
-    opacity: 0;
-    transition: 0.25s;
-    border-bottom: 1px solid var(--border);
-  }
-  .nav-links.open { transform: translateY(0); opacity: 1; }
-  .nav-toggle { display: flex; }
-  .hero-stats { gap: 1.5rem; }
-}
 
 
 /* ABOUT layout */
@@ -592,9 +574,6 @@ ul { list-style: none; }
   margin-top: 2rem;
 }
 
-@media (max-width: 800px) {
-  .about-layout { grid-template-columns: 1fr; }
-}
 
 .exp-bullets {
   margin: 0 0 0.75rem 1.1rem;
@@ -761,4 +740,196 @@ ul { list-style: none; }
   font-size: 0.88rem;
   line-height: 1.55;
 }
-.exp-panel .tags { border-top: 1px solid var(--border); padding-top: 1rem; }  
+.exp-panel .tags { border-top: 1px solid var(--border); padding-top: 1rem; }
+
+
+/* =========================================================
+   RESPONSIVE — móvil / tablet
+   ========================================================= */
+
+/* Nav: hamburger un poco antes (muchos links)
+   + menú bien cerrado (sin clicks fantasma) */
+@media (max-width: 900px) {
+  .nav-toggle {
+    display: flex;
+    z-index: 60;
+  }
+  .nav-links {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    z-index: 55;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.5rem 0;
+    margin: 0;
+    background: rgba(10, 10, 18, 0.97);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    transform: translateY(-110%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 0.25s ease, opacity 0.25s ease, visibility 0.25s;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  .nav-links.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .nav-links li {
+    border-bottom: 1px solid rgba(167, 139, 250, 0.08);
+  }
+  .nav-links a {
+    display: block;
+    padding: 0.9rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 800px) {
+  .about-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .nav {
+    padding: 0 1rem;
+  }
+
+  .section {
+    padding: 3rem 1rem;
+  }
+
+  .hero {
+    min-height: auto;
+    padding: 5.5rem 1rem 2rem;
+  }
+  .hero-inner {
+    padding: 0;
+  }
+  .hero-sub {
+    font-size: 0.95rem;
+    max-width: 100%;
+  }
+  .hero-stats {
+    gap: 1.25rem;
+    justify-content: center;
+  }
+  .hero-stats .stat strong {
+    font-size: 1.35rem;
+  }
+  .hero-stats .stat span {
+    font-size: 0.68rem;
+  }
+  .hero-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  .hero-actions .btn {
+    flex: 1 1 calc(50% - 0.5rem);
+    min-width: 140px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .h2 {
+    font-size: 1.2rem;
+  }
+  .lead {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Experiencia: tabs scroll + panel más compacto */
+  .exp-panel {
+    padding: 1.15rem;
+  }
+  .exp-title {
+    font-size: 1.05rem;
+  }
+  .exp-tab {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.68rem;
+  }
+
+  /* Proyectos: el carrusel ya scrollea; evitar que empuje layout */
+  .proj-viewport {
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  /* Tech stack grupos */
+  .stack-row {
+    gap: 1.25rem;
+  }
+  .stack-group h4 {
+    font-size: 0.8rem;
+  }
+
+  /* Contacto */
+  .contact-row {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  .contact-item {
+    padding: 0.9rem 1rem;
+  }
+
+  /* Educación / certs */
+  .edu-list,
+  .certs-list {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-chips,
+  .skills-bars {
+    grid-template-columns: 1fr;
+  }
+
+  .footer {
+    padding: 1.5rem 1rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-code {
+    font-size: clamp(1.8rem, 12vw, 2.6rem);
+  }
+  .hero-actions .btn {
+    flex: 1 1 100%;
+  }
+  .hero-stats {
+    gap: 1rem;
+  }
+}
+
+/* Texto largo no rompe el layout */
+.exp-company,
+.exp-sub,
+.about-body,
+.proj-card p,
+.contact-item .val {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Safe area (notch / home bar) */
+@supports (padding: max(0px)) {
+  .nav {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}

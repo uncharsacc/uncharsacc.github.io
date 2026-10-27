@@ -279,8 +279,9 @@ class PortfolioEditor(tk.Tk):
             return iid
 
         # --- Secciones (orden + visibilidad) ---
+        # No forzar open_=True: si no, al editar/OK se reabre sola y al iniciar ya viene abierta.
         sec = ensure_sections(self.profile)
-        so = add("", "📑 Orden de secciones (mover / ocultar)", "section_order", open_=True)
+        so = add("", "📑 Orden de secciones (mover / ocultar)", "section_order")
         for i, sid in enumerate(sec["order"]):
             on = sec["visible"].get(sid, True)
             mark = "👁️" if on else "🚫"
