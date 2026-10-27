@@ -474,7 +474,7 @@ function render(profile, projects) {
       <div class="name">${c.name || ''}</div>
       <div class="org">${c.org || ''}</div>
     </div>
-  `).join('') || '<p style="color:var(--muted)">Agrega certificaciones con el script</p>';
+  `).join('') || '<p style="color:var(--muted)"></p>';
 
   // Skills: icono + nombre (+ nivel), la caja se ajusta sola
   document.getElementById('skills-container').innerHTML = (profile.skills || []).map(s => `

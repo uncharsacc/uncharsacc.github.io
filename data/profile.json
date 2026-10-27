@@ -2,10 +2,10 @@
   "name": "Juan Rivera",
   "shortName": "JR",
   "title": "En curso",
-  "tagline": "Desarrollador en focado en el crecimiento, de habilidades y con pasamientos musicales",
-  "heroSubtitle": "Desarrollador en focado en el crecimiento, de habilidades y con pasa tienpos musicales.",
+  "tagline": "Desarrollador Full Stack enfocado en soluciones web y automatización",
+  "heroSubtitle": "Desarrollador Full Stack enfocado en crecimiento técnico, con experiencia en web, backend y automatización.",
   "stats": {
-    "years": "3+",
+    "years": "2+",
     "yearsLabel": "Años creando",
     "projects": "5+",
     "projectsLabel": "Proyectos",
@@ -29,47 +29,6 @@
     "MySQL",
     "Postgresql"
   ],
-  "skills": [
-    {
-      "name": "HTML / CSS",
-      "level": 80,
-      "icon": ""
-    },
-    {
-      "name": "JavaScript",
-      "level": 70,
-      "icon": ""
-    },
-    {
-      "name": "Python",
-      "level": 80
-    },
-    {
-      "name": "C#",
-      "level": 65,
-      "icon": ""
-    },
-    {
-      "name": "Git / GitHub",
-      "level": 75,
-      "icon": ""
-    },
-    {
-      "name": "Diseño Web",
-      "level": 65,
-      "icon": ""
-    },
-    {
-      "name": "Bases de Datos",
-      "level": 40,
-      "icon": ""
-    },
-    {
-      "name": "Django",
-      "level": 20,
-      "icon": ""
-    }
-  ],
   "experience": [
     {
       "title": "Estudiante en Prácticas – Desarrollo Full Stack",
@@ -91,30 +50,30 @@
       "icon": "https://cdn.simpleicons.org/privateinternetaccess"
     },
     {
-      "title": "Desarrollador de Software – Investigación en Química Computacional.",
-      "company": "Diego Inostroza Mendoza",
-      "period": "JUL. 2026 – SET. 2026",
-      "location": "SANTIAGO",
-      "description": "Algoritmos exploratorios para clústeres atómicos.",
+      "title": "Desarrollador de Software – Proyecto de Investigación",
+      "company": "Proyecto independiente (supervisión académica – Diego Inostroza Mendoza)",
+      "period": "Jul. 2026 – Sep. 2026",
+      "location": "Santiago, Chile",
+      "description": "Desarrollo de algoritmos exploratorios para generación y filtrado de clústeres atómicos en Química Computacional. Participación en paper científico.",
       "bullets": [
-        "Desarrollé en Python un conjunto de herramientas para generar, filtrar y explorar estructuras de clústeres atómicos en Química Computacional.",
-        "Generador: construcción de clústeres a partir de anillos apilados configurables por archivo .ini, con enumeración de permutaciones atómicas únicas, eliminación de duplicados por simetría rotacional y estimación de energía con potencial de Lennard-Jones. Exporta a XYZ e inputs de Gaussian.",
-        "Filtrado: detección de estructuras duplicadas o similares mediante el índice de similitud de Grigoryan-Springborg, agrupadas por composición y diferencia de energía (kcal/mol), con ejecución paralela y reportes comparativos (CSV, JSON y Markdown) para múltiples umbrales.",
-        "clustergen: paquete Python con CLI y arquitectura extensible (cada familia estructural se registra automáticamente) que genera familias de clústeres (deltaedro, fullereno, tambor, rueda, hélice, sándwich, corona, entre otras), con validación de fórmulas y geometría, reporte de grupo puntual y exportación a XYZ."
+        "Desarrollé en Python un conjunto de herramientas para generar, filtrar y explorar estructuras de clústeres atómicos.",
+        "Implementé generador de clústeres con enumeración de permutaciones, eliminación de duplicados por simetría y estimación de energía (Lennard-Jones).",
+        "Desarrollé sistema de filtrado por similitud (índice Grigoryan-Springborg) con ejecución paralela y reportes comparativos.",
+        "Creé el paquete Python `clustergen` con CLI y arquitectura extensible para múltiples familias estructurales."
       ],
       "tech": [
         "Python",
         "NumPy",
         "Pandas",
         "SymPy",
-        "Gaussian"
+        "Multiprocessing"
       ],
       "icon": "https://img.icons8.com/color/48/physics.png"
     }
   ],
   "education": [
     {
-      "title": "Ingeniero Civil Informatica y Telecomunicaciones",
+      "title": "Ingeniería Civil Informática y Telecomunicaciones",
       "institution": "Universidad Finis Terrae",
       "period": "2023 — Presente",
       "status": "En curso",
@@ -221,7 +180,7 @@
   "contact": {
     "email": "juanitolmillo@gmail.com",
     "phone": "+569 6414 3826",
-    "location": "Santiago de chile",
+    "location": "Santiago, Chile",
     "github": "https://github.com/uncharsacc",
     "linkedin": "https://cl.linkedin.com/in/juan-eulogio-rivera-vasquez-751340394",
     "items": [
@@ -234,12 +193,12 @@
       {
         "label": "Teléfono",
         "value": "+569 6414 3826",
-        "url": "tel:+569 6414 3826",
+        "url": "tel:+56964143826",
         "icon": "https://cdn.simpleicons.org/whatsapp"
       },
       {
         "label": "Ubicación",
-        "value": "Santiago de chile",
+        "value": "Santiago, Chile",
         "url": "",
         "icon": "https://img.icons8.com/material-rounded/48/place-marker.png"
       },
@@ -250,8 +209,8 @@
         "icon": "https://cdn.simpleicons.org/github"
       },
       {
-        "label": "Linkedin",
-        "value": "Juan Eulogio Rivera Vasquez",
+        "label": "LinkedIn",
+        "value": "Juan Eulogio Rivera Vásquez",
         "url": "https://cl.linkedin.com/in/juan-eulogio-rivera-vasquez-751340394",
         "icon": "https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg"
       }
@@ -302,15 +261,15 @@
   ],
   "highlights": [
     {
-      "num": "1+",
+      "num": "2+",
       "label": "Años creando"
     },
     {
-      "num": "4+",
+      "num": "5+",
       "label": "Proyectos"
     },
     {
-      "num": "6+",
+      "num": "8+",
       "label": "Skills clave"
     }
   ],

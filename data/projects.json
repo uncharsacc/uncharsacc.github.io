@@ -65,7 +65,7 @@
     "icon": ""
   },
   {
-    "id": "nuevo",
+    "id": "Vitrify",
     "name": "Software de Restauración y Protección del Sistema(Vitrify)",
     "description": "Software basado en drivers y procesos de arranque, diseñado para proteger y restaurar el estado de un computador de forma automática.",
     "tech": [
@@ -81,8 +81,8 @@
     "icon": ""
   },
   {
-    "id": "pagina-de-prueba",
-    "name": "Página de Prueba",
+    "id": "“Proyecto de aprendizaje  e-commerce",
+    "name": "“Proyecto de aprendizaje  e-commerce",
     "description": "Página de prueba orientada a un posible e-commerce. Nunca terminado dejado a mitad de su desarrollo",
     "tech": [
       "HTML"
