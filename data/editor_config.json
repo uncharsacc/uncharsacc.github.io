@@ -1,5 +1,5 @@
 {
   "github_remote": "origin",
   "github_branch": "main",
-  "auto_push": true
+  "auto_push": false
 }
