@@ -1,5 +1,3 @@
-/* Uncharsacc — orbital energy + secciones completas */
-
 const canvas = document.getElementById('bg-canvas');
 const ctx = canvas.getContext('2d');
 let W, H, particles = [], rings = [], nodes = [], trails = [], t = 0;
@@ -526,8 +524,57 @@ function render(profile, projects) {
       </div>
     </div>
   `).join('') : '<p style="color:var(--muted);text-align:center">Completa contacto en el editor</p>';
+
+  // ---- Secciones: visibilidad + orden (controlado desde el editor) ----
+  applySections(profile);
 }
 
+/** Config de secciones: order + visible. Auto-oculta vacías. */
+function applySections(profile) {
+  const DEFAULT_ORDER = [
+    "sobre-mi", "experiencia", "proyectos", "educacion",
+    "certs", "tecnologias", "skills", "contacto"
+  ];
+  const cfg = profile.sections || {};
+  const order = Array.isArray(cfg.order) && cfg.order.length ? cfg.order.slice() : DEFAULT_ORDER.slice();
+  const visible = Object.assign(
+    Object.fromEntries(DEFAULT_ORDER.map(id => [id, true])),
+    cfg.visible || {}
+  );
+
+  // Auto-hide vacías (a menos que el usuario las fuerza visibles con datos)
+  const skills = profile.skills;
+  const certs = profile.certifications || [];
+  if (!Array.isArray(skills) || skills.length === 0) visible.skills = false;
+  if (!certs.filter(c => c && c.name).length) visible.certs = false;
+
+  // Asegurar que todos los ids conocidos estén en order
+  DEFAULT_ORDER.forEach(id => { if (!order.includes(id)) order.push(id); });
+
+  const footer = document.querySelector("footer");
+  const parent = footer ? footer.parentElement : document.body;
+
+  order.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const show = visible[id] !== false;
+    el.hidden = !show;
+    el.style.display = show ? "" : "none";
+    if (show && footer) parent.insertBefore(el, footer);
+  });
+
+  // Nav links
+  document.querySelectorAll(".nav-links a").forEach(a => {
+    const href = a.getAttribute("href") || "";
+    if (!href.startsWith("#")) return;
+    const id = href.slice(1);
+    if (id === "inicio") return; // siempre visible
+    if (!(id in visible) && !DEFAULT_ORDER.includes(id)) return;
+    const show = visible[id] !== false;
+    const li = a.closest("li") || a;
+    li.style.display = show ? "" : "none";
+  });
+}
 
 const toggle = document.querySelector('.nav-toggle');
 const links = document.querySelector('.nav-links');

@@ -269,5 +269,28 @@
       "label": "Skills clave"
     }
   ],
-  "cv": "Curriculum.pdf"
+  "cv": "Curriculum.pdf",
+  "sections": {
+    "order": [
+      "sobre-mi",
+      "experiencia",
+      "proyectos",
+      "educacion",
+      "certs",
+      "tecnologias",
+      "skills",
+      "contacto"
+    ],
+    "visible": {
+      "sobre-mi": true,
+      "experiencia": true,
+      "proyectos": true,
+      "educacion": true,
+      "certs": false,
+      "tecnologias": true,
+      "skills": false,
+      "contacto": true
+    }
+  },
+  "skills": []
 }

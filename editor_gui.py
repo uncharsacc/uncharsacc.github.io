@@ -6,11 +6,13 @@ Editor visual del portfolio
 - Icono (emoji o URL) en casi todos los ítems
 - Crear grupos de tech stack
 - Contacto como lista con iconos
+- Ocultar / mostrar secciones
+- Reordenar secciones completas
+- Borrar Skills (y su rastro) / Certificaciones
 - Guardar + opcional push a GitHub
 """
 
 import json
-import os
 import subprocess
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
@@ -25,6 +27,20 @@ CONFIG = BASE / "data" / "editor_config.json"
 BG, BG2, FG, ACCENT, MUTED, CARD = (
     "#0f0f1a", "#16122a", "#e8e6f0", "#a78bfa", "#9590a8", "#1a1730"
 )
+
+# id HTML → (label, nav label)
+SECTION_META = [
+    ("sobre-mi", "Acerca de mí", "Acerca"),
+    ("experiencia", "Experiencia", "Exp."),
+    ("proyectos", "Proyectos", "Proyectos"),
+    ("educacion", "Educación", "Edu"),
+    ("certs", "Certificaciones", "Certs"),
+    ("tecnologias", "Tecnologías", "Tech"),
+    ("skills", "Skills", "Skills"),
+    ("contacto", "Contacto", "Contacto"),
+]
+SECTION_IDS = [s[0] for s in SECTION_META]
+SECTION_LABEL = {s[0]: s[1] for s in SECTION_META}
 
 
 def load_json(path, default=None):
@@ -53,18 +69,28 @@ def tech_icon(t):
 
 
 def make_tech(name, icon):
-    """Sin icono -> texto simple. Con icono -> {name, icon}."""
     name, icon = (name or "").strip(), (icon or "").strip()
     return {"name": name, "icon": icon} if icon else name
 
 
-def ask_icon(parent, current=""):
-    return ask(
-        parent,
-        "Icono",
-        "Emoji, URL de imagen o atajo si:nombre\n(ej: ✉️  ·  si:gmail  ·  https://…)",
-        current or "",
-    )
+def ensure_sections(profile):
+    """Garantiza profile.sections con order + visible."""
+    sec = profile.setdefault("sections", {})
+    order = sec.get("order")
+    if not isinstance(order, list) or not order:
+        order = SECTION_IDS[:]
+    # completar ids faltantes al final
+    for sid in SECTION_IDS:
+        if sid not in order:
+            order.append(sid)
+    # quitar ids desconocidos
+    order = [s for s in order if s in SECTION_IDS]
+    sec["order"] = order
+    vis = sec.setdefault("visible", {})
+    for sid in SECTION_IDS:
+        if sid not in vis:
+            vis[sid] = True
+    return sec
 
 
 class EditDialog(tk.Toplevel):
@@ -97,7 +123,7 @@ class EditDialog(tk.Toplevel):
             e.pack(fill="x", pady=(0, 8))
             tk.Label(
                 frm,
-                text="Atajo: si:python  ·  si:github/ffffff (con color)  ·  o URL https://…  ·  o un emoji",
+                text="Atajo: si:python  ·  si:github/ffffff  ·  URL  ·  emoji",
                 bg=BG, fg=MUTED, font=("", 8), wraplength=400, justify="left",
             ).pack(fill="x")
         bf = tk.Frame(frm, bg=BG)
@@ -124,12 +150,13 @@ class PortfolioEditor(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Editor Portfolio — Uncharsacc")
-        self.geometry("1020x680")
-        self.minsize(860, 520)
+        self.geometry("1060x720")
+        self.minsize(900, 560)
         self.configure(bg=BG)
         self.profile = load_json(PROFILE, {})
         self.projects = load_json(PROJECTS, [])
         self.config = load_json(CONFIG, {"github_remote": "", "github_branch": "main", "auto_push": False})
+        ensure_sections(self.profile)
         self._map = {}
         self._style()
         self._build()
@@ -171,12 +198,12 @@ class PortfolioEditor(tk.Tk):
         self.tree.bind("<<TreeviewSelect>>", self.on_select)
         self.tree.bind("<Double-1>", lambda e: self.edit_selected())
 
-        side = tk.Frame(body, bg=BG2, width=300, padx=10, pady=10)
+        side = tk.Frame(body, bg=BG2, width=310, padx=10, pady=10)
         side.pack(side="right", fill="y")
         side.pack_propagate(False)
         tk.Label(side, text="Acciones", bg=BG2, fg=ACCENT, font=("Segoe UI", 11, "bold")).pack(anchor="w")
         self.info = tk.Label(side, text="Selecciona un ítem", bg=BG2, fg=MUTED,
-                             justify="left", wraplength=270, font=("Segoe UI", 9))
+                             justify="left", wraplength=280, font=("Segoe UI", 9))
         self.info.pack(anchor="w", pady=6)
         for text, cmd in [
             ("✏️  Editar (o doble clic)", self.edit_selected),
@@ -184,15 +211,21 @@ class PortfolioEditor(tk.Tk):
             ("📁  Nuevo grupo (stack)", self.add_stack_group),
             ("⬆️  Subir", lambda: self.move(-1)),
             ("⬇️  Bajar", lambda: self.move(1)),
-            ("🗑️  Eliminar", self.delete_selected),
+            ("👁️  Ocultar / Mostrar sección", self.toggle_section),
+            ("🗑️  Eliminar ítem", self.delete_selected),
+            ("🧹  Borrar Skills (rastro)", self.wipe_skills),
+            ("🧹  Borrar Certificaciones", self.wipe_certs),
         ]:
             ttk.Button(side, text=text, command=cmd).pack(fill="x", pady=2)
         tk.Label(
             side,
-            text="\nIconos: emoji o URL\nej: https://cdn.simpleicons.org/gmail\n\n"
-                 "Contacto: cada ítem tiene\nlabel, valor, link e icono.\n\n"
-                 "GitHub: configura remote y\nusa «Guardar + Push».",
-            bg=BG2, fg=MUTED, justify="left", font=("Segoe UI", 8), wraplength=270,
+            text="\n📑 Secciones: usa Subir/Bajar sobre\n"
+                 "un ítem de «Orden de secciones»\n"
+                 "u Ocultar/Mostrar.\n\n"
+                 "Skills/Certs vacíos se ocultan solos\n"
+                 "en la web (main.js).\n\n"
+                 "Iconos: emoji, si:python o URL.",
+            bg=BG2, fg=MUTED, justify="left", font=("Segoe UI", 8), wraplength=280,
         ).pack(anchor="w", pady=10)
 
         self.status = tk.Label(self, text="Listo", bg=BG, fg=MUTED, anchor="w", padx=10)
@@ -201,7 +234,7 @@ class PortfolioEditor(tk.Tk):
     def set_status(self, m):
         self.status.config(text=m)
 
-    # ---- recordar qué estaba abierto / seleccionado al refrescar ----
+    # ---- estado del árbol ----
     def _tree_path(self, iid):
         parts = []
         while iid:
@@ -211,11 +244,13 @@ class PortfolioEditor(tk.Tk):
 
     def _open_paths(self):
         paths = set()
+
         def walk(parent):
             for c in self.tree.get_children(parent):
                 if self.tree.item(c, "open"):
                     paths.add(self._tree_path(c))
                 walk(c)
+
         walk("")
         return paths
 
@@ -230,7 +265,7 @@ class PortfolioEditor(tk.Tk):
         return found
 
     def refresh_tree(self):
-        # 1) guardar estado actual (vacío la primera vez -> todo cerrado)
+        ensure_sections(self.profile)
         open_before = self._open_paths()
         sel = self.tree.selection()
         sel_path = self._tree_path(sel[0]) if sel else None
@@ -242,6 +277,14 @@ class PortfolioEditor(tk.Tk):
             iid = self.tree.insert(parent, "end", text=text, open=open_)
             self._map[iid] = (kind, key)
             return iid
+
+        # --- Secciones (orden + visibilidad) ---
+        sec = ensure_sections(self.profile)
+        so = add("", "📑 Orden de secciones (mover / ocultar)", "section_order", open_=True)
+        for i, sid in enumerate(sec["order"]):
+            on = sec["visible"].get(sid, True)
+            mark = "👁️" if on else "🚫"
+            add(so, f"{mark}  {SECTION_LABEL.get(sid, sid)}  [{sid}]", "section_row", sid)
 
         h = add("", "🏠 Hero / Datos", "section_personal")
         for k, lab in [("name", "Nombre"), ("shortName", "Iniciales"),
@@ -262,12 +305,15 @@ class PortfolioEditor(tk.Tk):
         for i, it in enumerate(self.profile.get("highlights") or []):
             add(hi, f"{it.get('num', '')} — {it.get('label', '')}", "highlight", i)
 
-        si = add("", "◆ Habilidades clave", "section_skill_icons")
+        si = add("", "◆ Habilidades clave (iconos en About)", "section_skill_icons")
         for i, sk in enumerate(self.profile.get("skillIcons") or []):
             add(si, f"{(sk.get('icon') or '◆')[:20]}  {sk.get('name', '')}", "skill_icon", i)
 
-        sk = add("", "📈 Skills %", "section_skills")
-        for i, it in enumerate(self.profile.get("skills") or []):
+        sk_list = self.profile.get("skills")
+        if sk_list is None:
+            sk_list = []
+        sk = add("", f"📈 Skills %  ({'vacío → oculta sección' if not sk_list else len(sk_list)} ítems)", "section_skills")
+        for i, it in enumerate(sk_list):
             add(sk, f"{it.get('name', '')} — {it.get('level', 0)}%", "skill", i)
 
         ex = add("", "💼 Experiencia", "section_experience")
@@ -293,12 +339,10 @@ class PortfolioEditor(tk.Tk):
             for i, tech in enumerate(items):
                 add(gid, ("🖼 " if tech_icon(tech) else "") + tech_name(tech), "stack_item", (group, i))
 
-        # Contact as list of items
         co = add("", "📧 Contacto", "section_contact")
         c = self.profile.get("contact") or {}
         items = c.get("items")
         if not items:
-            # migrate classic fields
             items = []
             if c.get("email"):
                 items.append({"label": "Email", "value": c["email"], "url": "mailto:" + c["email"],
@@ -322,7 +366,6 @@ class PortfolioEditor(tk.Tk):
 
         self.set_status("Árbol actualizado")
 
-        # 2) restaurar solo lo que el usuario tenía abierto
         for path in open_before:
             nid = self._find_by_path(path)
             if nid:
@@ -342,7 +385,11 @@ class PortfolioEditor(tk.Tk):
         if not sel:
             return
         kind, key = self._map.get(sel[0], (None, None))
-        self.info.config(text=f"Tipo: {kind}\nClave: {key}")
+        extra = ""
+        if kind == "section_row":
+            vis = ensure_sections(self.profile)["visible"].get(key, True)
+            extra = f"\nVisible: {'sí' if vis else 'no'}\nDoble clic o «Ocultar/Mostrar»"
+        self.info.config(text=f"Tipo: {kind}\nClave: {key}{extra}")
 
     def selected(self):
         sel = self.tree.selection()
@@ -362,11 +409,79 @@ class PortfolioEditor(tk.Tk):
             parent = self.tree.parent(parent)
         return None
 
+    # ---- ocultar / mostrar sección ----
+    def toggle_section(self):
+        got = self.selected()
+        if not got:
+            return
+        iid, (kind, key) = got
+        sec = ensure_sections(self.profile)
+        sid = None
+        if kind == "section_row":
+            sid = key
+        else:
+            # mapear sección del árbol a id HTML
+            sec_kind = self.section_of(iid, kind)
+            mapping = {
+                "section_personal": "sobre-mi",
+                "section_experience": "experiencia",
+                "section_projects": "proyectos",
+                "section_education": "educacion",
+                "section_certs": "certs",
+                "section_stack": "tecnologias",
+                "section_skills": "skills",
+                "section_contact": "contacto",
+            }
+            sid = mapping.get(sec_kind)
+        if not sid:
+            messagebox.showinfo(
+                "Secciones",
+                "Selecciona un ítem en «📑 Orden de secciones»\n"
+                "o una sección de contenido (Experiencia, Skills…).",
+            )
+            return
+        cur = sec["visible"].get(sid, True)
+        sec["visible"][sid] = not cur
+        self.refresh_tree()
+        self.set_status(
+            f"Sección «{SECTION_LABEL.get(sid, sid)}» → "
+            f"{'visible' if not cur else 'oculta'} (guarda para aplicar en la web)"
+        )
+
+    def wipe_skills(self):
+        if not messagebox.askyesno(
+            "Borrar Skills",
+            "Esto vacía la lista de Skills (%) y oculta la sección en la web.\n"
+            "También puedes borrar «Habilidades clave» (iconos) por separado.\n\n¿Continuar?",
+        ):
+            return
+        self.profile["skills"] = []
+        sec = ensure_sections(self.profile)
+        sec["visible"]["skills"] = False
+        self.refresh_tree()
+        self.set_status("Skills borrados + sección oculta — pulsa Guardar")
+
+    def wipe_certs(self):
+        if not messagebox.askyesno(
+            "Borrar Certificaciones",
+            "Vacía certificaciones y oculta la sección. ¿Continuar?",
+        ):
+            return
+        self.profile["certifications"] = []
+        sec = ensure_sections(self.profile)
+        sec["visible"]["certs"] = False
+        self.refresh_tree()
+        self.set_status("Certificaciones borradas + sección oculta — pulsa Guardar")
+
     def edit_selected(self):
         got = self.selected()
         if not got:
             return
         iid, (kind, key) = got
+
+        if kind == "section_row":
+            self.toggle_section()
+            return
 
         if kind == "field":
             cur = self.profile.get(key, "")
@@ -409,17 +524,23 @@ class PortfolioEditor(tk.Tk):
 
         elif kind == "skill":
             arr = self.profile.setdefault("skills", [])
+            if not isinstance(arr, list):
+                self.profile["skills"] = arr = []
             it = arr[key]
             d = EditDialog(self, "Skill %",
                            [("name", "Nombre", it.get("name", "")),
-                            ("level", "Nivel 0-100", str(it.get("level", 70)))],
+                            ("level", "Nivel 0-100 (vacío = sin %)", str(it.get("level", "") or ""))],
                            with_icon=True, icon_value=it.get("icon", ""))
             if d.result:
                 it["name"] = d.result["name"]
-                try:
-                    it["level"] = int(d.result["level"])
-                except ValueError:
-                    pass
+                lvl = d.result["level"].strip()
+                if lvl == "":
+                    it.pop("level", None)
+                else:
+                    try:
+                        it["level"] = int(lvl)
+                    except ValueError:
+                        pass
                 it["icon"] = d.result["_icon"]
 
         elif kind == "experience":
@@ -470,8 +591,8 @@ class PortfolioEditor(tk.Tk):
                 it["image"] = r["image"] or None
                 it["featured"] = r["featured"].lower() in ("s", "si", "sí", "y", "1")
                 it["icon"] = r["_icon"]
-                if not it.get("id"):
-                    it["id"] = it["name"].lower().replace(" ", "-")
+                if not it.get("id") or it.get("id") in ("nuevo", "nuevo"):
+                    it["id"] = (it["name"] or "proyecto").lower().replace(" ", "-")[:40]
 
         elif kind == "education":
             arr = self.profile.setdefault("education", [])
@@ -509,8 +630,9 @@ class PortfolioEditor(tk.Tk):
             if d.result:
                 new_name = d.result["name"] or key
                 if new_name != key:
-                    # renombra manteniendo el orden y los iconos
-                    self.profile["techStack"] = {(new_name if k == key else k): v for k, v in stack.items()}
+                    self.profile["techStack"] = {
+                        (new_name if k == key else k): v for k, v in stack.items()
+                    }
 
         elif kind == "stack_item":
             group, idx = key
@@ -573,25 +695,33 @@ class PortfolioEditor(tk.Tk):
                     {"name": d.result["name"], "icon": d.result["_icon"] or "◆"})
         elif sec == "section_skills":
             d = EditDialog(self, "Skill %",
-                           [("name", "Nombre", ""), ("level", "Nivel", "70")], with_icon=True)
+                           [("name", "Nombre", ""), ("level", "Nivel (vacío = sin %)", "70")], with_icon=True)
             if d.result:
-                try:
-                    lvl = int(d.result["level"])
-                except ValueError:
-                    lvl = 70
-                self.profile.setdefault("skills", []).append(
-                    {"name": d.result["name"], "level": lvl, "icon": d.result["_icon"]})
+                item = {"name": d.result["name"], "icon": d.result["_icon"]}
+                lvl = d.result["level"].strip()
+                if lvl:
+                    try:
+                        item["level"] = int(lvl)
+                    except ValueError:
+                        pass
+                arr = self.profile.get("skills")
+                if not isinstance(arr, list):
+                    arr = []
+                    self.profile["skills"] = arr
+                arr.append(item)
+                # si agregas skills, muestra la sección
+                ensure_sections(self.profile)["visible"]["skills"] = True
         elif sec == "section_experience":
             self.profile.setdefault("experience", []).append(
                 {"title": "Nuevo", "company": "", "period": "", "location": "",
                  "description": "", "bullets": [], "tech": [], "icon": ""})
             self.refresh_tree()
-            # select last — edit
-            return self._edit_last("experience")
+            self.set_status("Agregado — selecciónalo y edítalo")
+            return
         elif sec == "section_projects":
             self.projects.append(
                 {"id": "nuevo", "name": "Nuevo proyecto", "description": "", "tech": [],
-                 "github": "", "demo": None, "featured": False, "image": None, "icon": ""})
+                 "github": None, "demo": None, "featured": False, "image": None, "icon": ""})
             self.refresh_tree()
             return
         elif sec == "section_education":
@@ -609,6 +739,7 @@ class PortfolioEditor(tk.Tk):
             if d.result:
                 self.profile.setdefault("certifications", []).append(
                     {"name": d.result["name"], "org": d.result["org"], "icon": d.result["_icon"]})
+                ensure_sections(self.profile)["visible"]["certs"] = True
         elif sec == "section_stack":
             if kind in ("stack_group", "stack_item"):
                 group = key if kind == "stack_group" else key[0]
@@ -643,10 +774,6 @@ class PortfolioEditor(tk.Tk):
         self.refresh_tree()
         self.set_status("Agregado")
 
-    def _edit_last(self, kind):
-        # noop placeholder
-        self.set_status("Agregado — selecciónalo y edítalo")
-
     def add_stack_group(self):
         name = ask(self, "Nuevo grupo", "Nombre del grupo (ej: Herramientas, DevOps, Cloud)")
         if not name:
@@ -665,6 +792,23 @@ class PortfolioEditor(tk.Tk):
         if not got:
             return
         iid, (kind, key) = got
+
+        # Mover sección completa en el orden de la página
+        if kind == "section_row":
+            sec = ensure_sections(self.profile)
+            order = sec["order"]
+            try:
+                i = order.index(key)
+            except ValueError:
+                return
+            j = i + delta
+            if j < 0 or j >= len(order):
+                return
+            order[i], order[j] = order[j], order[i]
+            self.refresh_tree()
+            self.set_status(f"Sección «{SECTION_LABEL.get(key, key)}» movida")
+            return
+
         arr, i = None, None
         if kind == "project":
             arr, i = self.projects, key
@@ -675,7 +819,10 @@ class PortfolioEditor(tk.Tk):
         elif kind == "skill_icon":
             arr, i = self.profile.setdefault("skillIcons", []), key
         elif kind == "skill":
-            arr, i = self.profile.setdefault("skills", []), key
+            arr = self.profile.get("skills")
+            if not isinstance(arr, list):
+                return
+            i = key
         elif kind == "experience":
             arr, i = self.profile.setdefault("experience", []), key
         elif kind == "education":
@@ -688,7 +835,11 @@ class PortfolioEditor(tk.Tk):
             group, i = key
             arr = self.profile.setdefault("techStack", {}).setdefault(group, [])
         else:
-            messagebox.showinfo("Info", "Este ítem no se reordena así")
+            messagebox.showinfo(
+                "Info",
+                "Este ítem no se reordena así.\n"
+                "Para secciones de la página: selecciona en «📑 Orden de secciones».",
+            )
             return
         j = i + delta
         if j < 0 or j >= len(arr):
@@ -702,6 +853,13 @@ class PortfolioEditor(tk.Tk):
         if not got:
             return
         iid, (kind, key) = got
+        if kind == "section_row":
+            messagebox.showinfo(
+                "Secciones",
+                "Las secciones de la página no se eliminan del HTML.\n"
+                "Usa «Ocultar / Mostrar sección» o los botones 🧹 para Skills/Certs.",
+            )
+            return
         if not messagebox.askyesno("Confirmar", "¿Eliminar?"):
             return
         try:
@@ -714,13 +872,19 @@ class PortfolioEditor(tk.Tk):
             elif kind == "skill_icon":
                 self.profile["skillIcons"].pop(key)
             elif kind == "skill":
-                self.profile["skills"].pop(key)
+                arr = self.profile.get("skills")
+                if isinstance(arr, list):
+                    arr.pop(key)
+                    if not arr:
+                        ensure_sections(self.profile)["visible"]["skills"] = False
             elif kind == "experience":
                 self.profile["experience"].pop(key)
             elif kind == "education":
                 self.profile["education"].pop(key)
             elif kind == "cert":
                 self.profile["certifications"].pop(key)
+                if not self.profile.get("certifications"):
+                    ensure_sections(self.profile)["visible"]["certs"] = False
             elif kind == "contact_item":
                 self.profile["contact"]["items"].pop(key)
             elif kind == "stack_item":
@@ -754,19 +918,12 @@ class PortfolioEditor(tk.Tk):
             self.config["auto_push"] = d.result["auto"].lower() in ("s", "si", "sí", "y", "1")
             save_json(CONFIG, self.config)
             self.set_status("Config GitHub guardada")
-            messagebox.showinfo(
-                "GitHub",
-                "Para publicar como david-tkd203.github.io pero tuyo:\n\n"
-                "1. Crea repo: uncharsacc.github.io (usuario.github.io)\n"
-                "2. En esta carpeta:\n"
-                "   git init\n"
-                "   git remote add origin https://github.com/uncharsacc/uncharsacc.github.io.git\n"
-                "3. Aquí: Guardar + Push\n\n"
-                "Necesitas estar logueado (gh auth login o credenciales git).",
-            )
 
     def save_all(self, quiet=False):
-        # keep classic contact fields in sync for compatibility
+        ensure_sections(self.profile)
+        # skills null → lista vacía (más predecible para el JS)
+        if self.profile.get("skills") is None:
+            self.profile["skills"] = []
         c = self.profile.setdefault("contact", {})
         items = c.get("items") or []
         for it in items:
@@ -786,7 +943,12 @@ class PortfolioEditor(tk.Tk):
         save_json(CONFIG, self.config)
         self.set_status("💾 Guardado en data/")
         if not quiet:
-            messagebox.showinfo("Guardado", "JSON actualizados.\nRecarga la web (Ctrl+F5).")
+            messagebox.showinfo(
+                "Guardado",
+                "JSON actualizados.\n"
+                "Si cambiaste orden/visibilidad de secciones, asegúrate de tener el main.js nuevo.\n"
+                "Recarga la web (Ctrl+F5).",
+            )
         if self.config.get("auto_push"):
             self._git_push()
 
@@ -798,7 +960,6 @@ class PortfolioEditor(tk.Tk):
         branch = self.config.get("github_branch") or "main"
         remote = self.config.get("github_remote") or "origin"
         try:
-            # ensure git repo
             r = subprocess.run(["git", "status"], cwd=BASE, capture_output=True, text=True)
             if r.returncode != 0:
                 messagebox.showwarning(
@@ -833,6 +994,7 @@ class PortfolioEditor(tk.Tk):
         self.profile = load_json(PROFILE, {})
         self.projects = load_json(PROJECTS, [])
         self.config = load_json(CONFIG, self.config)
+        ensure_sections(self.profile)
         self.refresh_tree()
         self.set_status("Recargado desde disco")
 
