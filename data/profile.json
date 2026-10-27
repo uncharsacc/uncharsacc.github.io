@@ -54,7 +54,7 @@
       "company": "Proyecto independiente (supervisión académica – Diego Inostroza Mendoza)",
       "period": "Jul. 2026 – Sep. 2026",
       "location": "Santiago, Chile",
-      "description": "Desarrollo de algoritmos exploratorios para generación y filtrado de clústeres atómicos en Química Computacional. Participación en paper científico.",
+      "description": "Desarrollo de algoritmos exploratorios para generación y filtrado de clústeres atómicos en Química Computacional.",
       "bullets": [
         "Desarrollé en Python un conjunto de herramientas para generar, filtrar y explorar estructuras de clústeres atómicos.",
         "Implementé generador de clústeres con enumeración de permutaciones, eliminación de duplicados por simetría y estimación de energía (Lennard-Jones).",
